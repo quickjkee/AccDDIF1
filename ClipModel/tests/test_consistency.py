@@ -12,7 +12,7 @@ def test_consistency(model_name):
     jit_model, transform = clip.load(model_name, device=device, jit=True)
     py_model, _ = clip.load(model_name, device=device, jit=False)
 
-    image = transform(Image.open("CLIP.png")).unsqueeze(0).to(device)
+    image = transform(Image.open("ClipModel.png")).unsqueeze(0).to(device)
     text = clip.tokenize(["a diagram", "a dog", "a cat"]).to(device)
 
     with torch.no_grad():

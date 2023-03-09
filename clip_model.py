@@ -15,7 +15,7 @@ class DirectionLoss(torch.nn.Module):
         self.preprocess = transforms.Compose([transforms.Normalize(mean=[-1.0, -1.0, -1.0],
                                                                    std=[2.0, 2.0,
                                                                         2.0])] +  # Un-normalize from [-1.0, 1.0] (GAN output) to [0, 1].
-                                             clip_preprocess.transforms[:2] +  # to match CLIP input scale assumptions
+                                             clip_preprocess.transforms[:2] +  # to match ClipModel input scale assumptions
                                              clip_preprocess.transforms[4:])
 
         self.loss_type = loss_type
@@ -26,7 +26,7 @@ class DirectionLoss(torch.nn.Module):
             'mae': torch.nn.L1Loss
         }[loss_type]()
 
-    # Calculate losses between directions in CLIP space
+    # Calculate losses between directions in ClipModel space
     # ----------------------------------------------------------------------------
     def forward(self, x, y):
         if self.loss_type == "cosine":
@@ -51,7 +51,7 @@ class DirectionLoss(torch.nn.Module):
         return image_features
     # ----------------------------------------------------------------------------
 
-    # Calculate direction in CLIP space between source and target images
+    # Calculate direction in ClipModel space between source and target images
     # ----------------------------------------------------------------------------
     def compute_image_direction(self, source_img: torch.Tensor, target_img: torch.Tensor) -> torch.Tensor:
         source_features = self.get_image_features(source_img)
