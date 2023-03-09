@@ -1,5 +1,5 @@
 import torch
-import clip
+from ClipModel.clip import clip
 
 import torchvision.transforms as transforms
 
