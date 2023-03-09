@@ -21,7 +21,7 @@ from training import dataset
 #----------------------------------------------------------------------------
 
 def calculate_inception_stats(
-    image_path, num_expected=None, seed=0, max_batch_size=64,
+    image_path, ref_path_inc, num_expected=None, seed=0, max_batch_size=64,
     num_workers=3, prefetch_factor=2, device=torch.device('cuda'),
 ):
     # Rank 0 goes first.
@@ -31,11 +31,12 @@ def calculate_inception_stats(
     # Load Inception-v3 model.
     # This is a direct PyTorch translation of http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz
     dist.print0('Loading Inception-v3 model...')
-    detector_url = 'https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan3/versions/1/files/metrics/inception-2015-12-05.pkl'
+    #detector_url = 'https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan3/versions/1/files/metrics/inception-2015-12-05.pkl'
+    detector_url = ref_path_inc
     detector_kwargs = dict(return_features=True)
     feature_dim = 2048
-    with dnnlib.util.open_url(detector_url, verbose=(dist.get_rank() == 0)) as f:
-        detector_net = pickle.load(f).to(device)
+    with open(detector_url, 'rb') as handle:
+        detector_net = pickle.load(handle).to(device)
 
     # List images.
     dist.print0(f'Loading images from "{image_path}"...')
@@ -112,8 +113,9 @@ def main():
 @click.option('--num', 'num_expected',  help='Number of images to use', metavar='INT',              type=click.IntRange(min=2), default=50000, show_default=True)
 @click.option('--seed',                 help='Random seed for selecting the images', metavar='INT', type=int, default=0, show_default=True)
 @click.option('--batch',                help='Maximum batch size', metavar='INT',                   type=click.IntRange(min=1), default=64, show_default=True)
+@click.option('--ref_inc', 'ref_path_inc',      help='Dataset reference statistics ', metavar='NPZ|URL',    type=str, required=True)
 
-def calc(image_path, ref_path, num_expected, seed, batch):
+def calc(image_path, ref_path, num_expected, seed, batch, ref_path_inc):
     """Calculate FID for a given set of images."""
     torch.multiprocessing.set_start_method('spawn')
     dist.init()
@@ -124,7 +126,11 @@ def calc(image_path, ref_path, num_expected, seed, batch):
         with dnnlib.util.open_url(ref_path) as f:
             ref = dict(np.load(f))
 
-    mu, sigma = calculate_inception_stats(image_path=image_path, num_expected=num_expected, seed=seed, max_batch_size=batch)
+    mu, sigma = calculate_inception_stats(image_path=image_path,
+                                          num_expected=num_expected,
+                                          seed=seed,
+                                          max_batch_size=batch,
+                                          ref_path_inc=ref_path_inc)
     dist.print0('Calculating FID...')
     if dist.get_rank() == 0:
         fid = calculate_fid_from_inception_stats(mu, sigma, ref['mu'], ref['sigma'])
