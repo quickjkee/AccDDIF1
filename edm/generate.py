@@ -262,8 +262,8 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
 
     # Load network.
     dist.print0(f'Loading network from "{network_pkl}"...')
-    with dnnlib.util.open_url(network_pkl, verbose=(dist.get_rank() == 0)) as f:
-        net = pickle.load(f)['ema'].to(device)
+    with open(network_pkl, 'rb') as handle:
+        net = pickle.load(handle)['ema'].to(device)
 
     # Other ranks follow.
     if dist.get_rank() == 0:
