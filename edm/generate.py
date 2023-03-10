@@ -254,6 +254,8 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
         --network=https://nvlabs-fi-cdn.nvidia.com/edm/pretrained/edm-cifar10-32x32-cond-vp.pkl
     """
     subdirs = False
+    device = torch.device('cuda:1,2,3,4,5,6,7')
+
     dist.init()
     num_batches = ((len(seeds) - 1) // (max_batch_size * dist.get_world_size()) + 1) * dist.get_world_size()
     all_batches = torch.as_tensor(seeds).tensor_split(num_batches)

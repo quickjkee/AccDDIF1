@@ -1,11 +1,15 @@
 import torch
 import os
+import copy
 import pickle
 import numpy as np
 
 from tqdm import tqdm
 
 from data_utils import save_batch, calc_fid, delete_and_create_dir
+from edm import generate_and_fid
+
+INPUT_PATH = os.environ['INPUT_PATH']
 
 
 class FineTuner(object):
@@ -44,7 +48,7 @@ class FineTuner(object):
         print('Fine tune')
 
         # STEP 0. Initial estimation
-        #self._estim_and_save('runs', is_first=True)
+        self._save_generate_fid(it=0)
 
         for it in tqdm(range(self.n_iters)):
 
@@ -67,7 +71,8 @@ class FineTuner(object):
             loss_clip.backward()
             self.optim_ft.step()
 
-            #self._estim_and_save('runs')
+            # STEP 5 (additional). Estimation
+            self._save_generate_fid(it)
 
             print(f"{t_steps}, CLIP {round(loss_clip.item(), 3)}")
     # ----------------------------------------------------------------------------
@@ -172,4 +177,22 @@ class FineTuner(object):
             pickle.dump(self.fid_stats, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
         print('Estimation ended')
+    # ----------------------------------------------------------------------------
+
+    # ----------------------------------------------------------------------------
+    @torch.no_grad()
+    def _save_generate_fid(self, it):
+
+        # Save model
+        data = dict(ema=self.model.net)
+        for key, value in data.items():
+            if isinstance(value, torch.nn.Module):
+                value = copy.deepcopy(value).eval().requires_grad_(False)
+                data[key] = value.cpu()
+            del value  # conserve memory
+        with open(os.path.join(INPUT_PATH, f'edm-ffhq-64x64-uncond-vp-{it}.pkl'), 'wb') as f:
+            pickle.dump(data, f)
+
+        # Generate samples and calculate fid
+        generate_and_fid.run(path_to_model=os.path.join(INPUT_PATH, f'edm-ffhq-64x64-uncond-vp-{it}.pkl'))
     # ----------------------------------------------------------------------------
