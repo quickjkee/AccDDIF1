@@ -12,3 +12,11 @@ subprocess.call(f"torchrun --standalone --nproc_per_node=8 fid.py calc --images=
     --ref=$INPUT_PATH/ffhq-64x64.npz \
     --ref_inc=inception-2015-12-05.pkl", shell=True)
 print('====================================')
+
+for i in range(40):
+    print('====================================')
+    print('x0_{i} FID')
+    subprocess.call(f"torchrun --standalone --nproc_per_node=8 fid.py calc --images=fid-tmp/x0_{i} \
+        --ref=$INPUT_PATH/ffhq-64x64.npz \
+        --ref_inc=inception-2015-12-05.pkl", shell=True)
+    print('====================================')
