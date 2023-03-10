@@ -1,3 +1,9 @@
+import sys
+sys.path.append('$SOURCE_CODE_PATH:/EffDiff/ClipModel')
+sys.path.append('$SOURCE_CODE_PATH:/EffDiff/ClipModel/clip')
+sys.path.append('$SOURCE_CODE_PATH:/EffDiff/edm')
+print(sys.path)
+
 import torch
 import pickle
 
