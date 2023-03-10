@@ -1,6 +1,9 @@
 import torch
+
+import os
+INPUT_PATH = os.environ['INPUT_PATH']
+
 from ClipModel.clip import clip
-from main import INPUT_PATH
 
 import torchvision.transforms as transforms
 
