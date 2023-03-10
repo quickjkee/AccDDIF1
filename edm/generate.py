@@ -49,6 +49,7 @@ def edm_sampler(
 
         # Euler step.
         denoised = net(x_hat, t_hat, class_labels).to(torch.float64)
+        x0s.append(denoised.cpu())
         d_cur = (x_hat - denoised) / t_hat
         x_next = x_hat + (t_next - t_hat) * d_cur
 
@@ -58,7 +59,7 @@ def edm_sampler(
             d_prime = (x_next - denoised) / t_next
             x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
 
-    return x_next
+    return x_next, x0s
 
 #----------------------------------------------------------------------------
 # Generalized ablation sampler, representing the superset of all sampling
