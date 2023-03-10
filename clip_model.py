@@ -1,5 +1,6 @@
 import torch
 from ClipModel.clip import clip
+from main import INPUT_PATH
 
 import torchvision.transforms as transforms
 
@@ -10,7 +11,7 @@ class DirectionLoss(torch.nn.Module):
         super(DirectionLoss, self).__init__()
 
         self.device = device
-        self.clip, clip_preprocess = clip.load('ViT-B/32', device=self.device)
+        self.clip, clip_preprocess = clip.load(f'{INPUT_PATH}/ViT-B-32.pt', device=self.device)
         self.clip_preprocess = clip_preprocess
         self.preprocess = transforms.Compose([transforms.Normalize(mean=[-1.0, -1.0, -1.0],
                                                                    std=[2.0, 2.0,
