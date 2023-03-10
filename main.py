@@ -4,17 +4,20 @@ import pickle
 from fine_tune import FineTuner
 from clip_model import DirectionLoss
 from DiffModels.KarrasEDM import DiffModel
-from edm import dnnlib
 from data_utils import make_dataset, delete_and_create_dir
 
-device = torch.device('cuda')
+devices = torch.device('cuda')
+print(f'All devices {devices}')
+
+device = torch.device('cuda:0')
+print(f'Working device {device}')
 
 # Load the network
-model_root = 'https://nvlabs-fi-cdn.nvidia.com/edm/pretrained'
-network_pkl = f'{model_root}/edm-ffhq-64x64-uncond-vp.pkl'
+network_pkl = '$INPUT_PATH/edm-ffhq-64x64-uncond-vp.pkl'
 
-with dnnlib.util.open_url(network_pkl) as f:
-    net = pickle.load(f)['ema'].to(device)
+print(f'Loading network from "{network_pkl}"...')
+with open(network_pkl, 'rb') as handle:
+    net = pickle.load(handle)['ema'].to(device)
 
 ##############################
 #
@@ -23,7 +26,7 @@ with dnnlib.util.open_url(network_pkl) as f:
 ##############################
 
 # Dataset
-path_to_data = '../../Desktop/AccelerationDiff/datasets/ffhq-64x64.zip'
+path_to_data = 'datasets/ffhq-64x64.zip'
 dataset = make_dataset(path_to_data, batch_size=64)
 
 # Models
