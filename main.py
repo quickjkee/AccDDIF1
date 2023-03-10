@@ -1,7 +1,12 @@
 import sys
-sys.path.append('$SOURCE_CODE_PATH:/EffDiff/ClipModel')
-sys.path.append('$SOURCE_CODE_PATH:/EffDiff/ClipModel/clip')
-sys.path.append('$SOURCE_CODE_PATH:/EffDiff/edm')
+import os
+
+SOURCE_CODE_PATH = os.environ['SOURCE_CODE_PATH']
+INPUT_PATH = os.environ['INPUT_PATH']
+
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/ClipModel')
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/ClipModel/clip')
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/edm')
 print(sys.path)
 
 import torch
@@ -19,7 +24,7 @@ device = torch.device('cuda:0')
 print(f'Working device {device}')
 
 # Load the network
-network_pkl = '$INPUT_PATH/edm-ffhq-64x64-uncond-vp.pkl'
+network_pkl = f'{INPUT_PATH}/edm-ffhq-64x64-uncond-vp.pkl'
 
 print(f'Loading network from "{network_pkl}"...')
 with open(network_pkl, 'rb') as handle:
