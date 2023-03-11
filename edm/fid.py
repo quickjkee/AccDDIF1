@@ -139,7 +139,7 @@ def calc(image_path, ref_path, num_expected, seed, batch, ref_path_inc):
         print(f'{fid:g}')
 
         # Update previous values
-        with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'wb') as handle:
+        with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'rb') as handle:
             fid_stats = pickle.load(handle)
 
             try:

@@ -80,7 +80,7 @@ class FineTuner(object):
             # STEP 5 (additional). Estimation
             self._save_generate_fid(it + 1)
 
-            with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'wb') as handle:
+            with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'rb') as handle:
                 fid_stats = pickle.load(handle)
                 print(fid_stats)
     # ----------------------------------------------------------------------------
