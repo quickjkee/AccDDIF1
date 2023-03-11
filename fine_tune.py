@@ -10,6 +10,7 @@ from data_utils import save_batch, calc_fid, delete_and_create_dir
 from edm import generate_and_fid
 
 INPUT_PATH = os.environ['INPUT_PATH']
+OUTPUT_PATH = os.environ['TMP_OUTPUT_PATH']
 
 
 class FineTuner(object):
@@ -35,7 +36,10 @@ class FineTuner(object):
         self.device = device
         self.n_iters = n_iters
 
+        # Statistics for further saving
         self.fid_stats = {}
+        with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'wb') as handle:
+            pickle.dump(self.fid_stats, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     # ----------------------------------------------------------------------------
     def fine_tune(self):
@@ -75,6 +79,10 @@ class FineTuner(object):
 
             # STEP 5 (additional). Estimation
             self._save_generate_fid(it + 1)
+
+            with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'wb') as handle:
+                fid_stats = pickle.load(handle)
+                print(fid_stats)
     # ----------------------------------------------------------------------------
 
     ########################################################################

@@ -18,6 +18,8 @@ import dnnlib
 from torch_utils import distributed as dist
 from training import dataset
 
+OUTPUT_PATH = os.environ['TMP_OUTPUT_PATH']
+
 #----------------------------------------------------------------------------
 
 def calculate_inception_stats(
@@ -135,6 +137,20 @@ def calc(image_path, ref_path, num_expected, seed, batch, ref_path_inc):
     if dist.get_rank() == 0:
         fid = calculate_fid_from_inception_stats(mu, sigma, ref['mu'], ref['sigma'])
         print(f'{fid:g}')
+
+        # Update previous values
+        with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'wb') as handle:
+            fid_stats = pickle.load(handle)
+
+            try:
+                fid_stats[image_path].append(fid)
+            except KeyError:
+                fid_stats['final'] = []
+                fid_stats['final'].append(fid)
+
+        with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'wb') as handle:
+            pickle.dump(fid_stats, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
     torch.distributed.barrier()
 
 #----------------------------------------------------------------------------
