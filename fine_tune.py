@@ -202,5 +202,6 @@ class FineTuner(object):
             pickle.dump(data, f)
 
         # Generate samples and calculate fid
-        generate_and_fid.run(path_to_model=os.path.join(INPUT_PATH, f'edm-ffhq-64x64-uncond-vp-{it}.pkl'))
+        generate_and_fid.run(path_to_model=os.path.join(INPUT_PATH, f'edm-ffhq-64x64-uncond-vp-{it}.pkl'),
+                             n_steps=self.model.num_steps)
     # ----------------------------------------------------------------------------
