@@ -109,11 +109,14 @@ class DiffModel(torch.nn.Module):
         :return: (Tensor), [b_size]
         """
         ones = torch.ones([images.shape[0], 1, 1, 1], device=images.device)
-        random_t = np.random.choice(self.t_steps_to_sample, 1)[0]
 
-        sigma = ones * random_t
+        for i in range(len(images)):
+            random_t = np.random.choice(self.t_steps_to_sample, 1)[0]
+            ones[i] *= random_t
 
-        return random_t
+        #sigma = ones * random_t
+
+        return ones
     # ----------------------------------------------------------------------------
 
     # Random time step
@@ -154,7 +157,7 @@ class DiffModel(torch.nn.Module):
         self.t_steps = t_steps.cpu().numpy()
         print(self.t_steps)
         self.t_steps_to_sample = self.t_steps[self.t_steps > 0.1]
-        #self.t_steps_to_sample = self.t_steps_to_sample[self.t_steps_to_sample < 20]
+        self.t_steps_to_sample = self.t_steps_to_sample[self.t_steps_to_sample < 40]
     # ----------------------------------------------------------------------------
 
     # Change regime from train to eval and vice versa
