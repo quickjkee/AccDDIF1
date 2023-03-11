@@ -157,7 +157,7 @@ class DiffModel(torch.nn.Module):
         self.t_steps = t_steps.cpu().numpy()
         print(self.t_steps)
         self.t_steps_to_sample = self.t_steps[self.t_steps > 0.1]
-        self.t_steps_to_sample = self.t_steps_to_sample[self.t_steps_to_sample < 40]
+        #self.t_steps_to_sample = self.t_steps_to_sample[self.t_steps_to_sample < 40]
     # ----------------------------------------------------------------------------
 
     # Change regime from train to eval and vice versa
