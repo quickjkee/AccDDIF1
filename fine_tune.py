@@ -71,10 +71,10 @@ class FineTuner(object):
             loss_clip.backward()
             self.optim_ft.step()
 
-            # STEP 5 (additional). Estimation
-            self._save_generate_fid(it)
-
             print(f"{t_steps}, CLIP {round(loss_clip.item(), 3)}")
+
+            # STEP 5 (additional). Estimation
+            self._save_generate_fid(it + 1)
     # ----------------------------------------------------------------------------
 
     ########################################################################
