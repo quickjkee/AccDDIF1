@@ -58,3 +58,4 @@ delete_and_create_dir('runs')
 
 tuner.fine_tune()
 
+#WAS lr 9e-6, num_steps=40
