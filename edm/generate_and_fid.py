@@ -1,7 +1,7 @@
 import subprocess
 
 
-def run(path_to_model='$INPUT_PATH/edm-ffhq-64x64-uncond-vp.pkl'):
+def run(path_to_model):
 
     print('===============================================================================================================================')
     print(f'===================GENERATION STARTED using {path_to_model}===================')
