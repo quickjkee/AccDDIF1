@@ -43,7 +43,7 @@ dataset = make_dataset(path_to_data, batch_size=64)
 
 # Models
 model = DiffModel(net=net,
-                  num_steps=40,
+                  num_steps=10,
                   device=device)
 clip = DirectionLoss(device=device)
 tuner = FineTuner(model=model,
