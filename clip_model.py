@@ -96,3 +96,16 @@ class DirectionLoss(torch.nn.Module):
 
         return self.direction_loss(pred_direction, true_direction).mean()
     # ----------------------------------------------------------------------------
+
+    # ----------------------------------------------------------------------------
+    def loss2(self,
+              pred_img,
+              target_img):
+
+        pred_encoding = self.get_image_features(pred_img)
+        target_encoding = self.get_image_features(target_img)
+
+        loss = torch.nn.MSELoss()(pred_encoding, target_encoding)
+
+        return loss
+    # ----------------------------------------------------------------------------

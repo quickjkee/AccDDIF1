@@ -92,8 +92,9 @@ class FineTuner(object):
                                                  t_steps)
 
             # STEP 4. Loss calculation and updates the model
-            loss_clip = (2 - self.clip.loss(noised_images, pred_images, images)) / 2
-            loss_clip = -torch.log(loss_clip)
+            #loss_clip = (2 - self.clip.loss(noised_images, pred_images, images)) / 2
+            #loss_clip = -torch.log(loss_clip)
+            loss_clip = self.clip.loss2(pred_images, images)
 
             self.optim_ft.zero_grad()
             loss_clip.backward()
