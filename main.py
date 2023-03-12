@@ -38,8 +38,9 @@ with open(network_pkl, 'rb') as handle:
 ##############################
 
 # Dataset
+b_size = 64
 path_to_data = 'datasets/ffhq-64x64.zip'
-dataset = make_dataset(path_to_data, batch_size=64)
+dataset = make_dataset(path_to_data, batch_size=b_size)
 
 # Models
 model = DiffModel(net=net,
@@ -50,6 +51,7 @@ tuner = FineTuner(model=model,
                   clip=clip,
                   dataset=dataset,
                   device=device,
+                  batch_size=b_size,
                   n_iters=50,
                   lr=8e-6)
 
