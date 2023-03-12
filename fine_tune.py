@@ -75,7 +75,7 @@ class FineTuner(object):
                                       second_ord=True,
                                       latents=latents,
                                       num_steps=40)
-            images = x0s[-2].to(self.device)=
+            images = x0s[-2].to(self.device)
 
             # STEP 2. Sample random schedule to noise the images
             #t_steps = self.model.get_random_from_schedule(images).cuda() #self.model.net.round_sigma(80).cuda()
