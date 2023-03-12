@@ -95,6 +95,7 @@ class DiffModel(torch.nn.Module):
             # Apply 2nd order correction.
             if i < self.num_steps - 1:
                 denoised = net(x_next, t_next, class_labels).to(torch.float64)
+                interm_x0s.append(denoised.cpu())
                 d_prime = (x_next - denoised) / t_next
                 x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
 
