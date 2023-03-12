@@ -61,7 +61,7 @@ class FineTuner(object):
             images = images.to(torch.float32) / 127.5 - 1
 
             # STEP 2. Sample random schedule to noise the images
-            t_steps = self.model.get_random_time(images).cuda() #self.model.net.round_sigma(80).cuda()
+            t_steps = self.model.get_random_from_schedule(images).cuda() #self.model.net.round_sigma(80).cuda()
             noised_images = self.model.noising_images(images, t_steps)
 
             # STEP 3. Predict the real image
