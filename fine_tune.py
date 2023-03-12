@@ -70,7 +70,7 @@ class FineTuner(object):
                                    self.model.net.img_resolution,
                                    self.model.net.img_resolution],
                                   device=self.device)
-            _, x0s = self.edm_sampler(net=self.copy_model,
+            _, x0s = self.edm_sampler(net=self.copy_model.net,
                                       is_x0=True,
                                       latents=latents,
                                       num_steps=40)
@@ -79,7 +79,7 @@ class FineTuner(object):
             # STEP 2. Sample random schedule to noise the images
             #t_steps = self.model.get_random_from_schedule(images).cuda() #self.model.net.round_sigma(80).cuda()
             #noised_images = self.model.noising_images(images, t_steps)
-            _, xts = self.edm_sampler(net=self.model,
+            _, xts = self.edm_sampler(net=self.model.net,
                                       is_x0=False,
                                       latents=latents,
                                       num_steps=self.model.num_steps)
