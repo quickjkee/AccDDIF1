@@ -72,6 +72,7 @@ class FineTuner(object):
                                   device=self.device)
             _, x0s = self.edm_sampler(net=self.copy_model.net,
                                       is_x0=True,
+                                      second_ord=True,
                                       latents=latents,
                                       num_steps=40)
             images = x0s[-2].to(self.device)
