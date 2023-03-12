@@ -75,7 +75,7 @@ class FineTuner(object):
                                       second_ord=True,
                                       latents=latents,
                                       num_steps=40)
-            images = x0s[-2].to(self.device)
+            images = x0s[-2].to(self.device)=
 
             # STEP 2. Sample random schedule to noise the images
             #t_steps = self.model.get_random_from_schedule(images).cuda() #self.model.net.round_sigma(80).cuda()
@@ -92,9 +92,8 @@ class FineTuner(object):
                                                  t_steps)
 
             # STEP 4. Loss calculation and updates the model
-            #loss_clip = (2 - self.clip.loss(noised_images, pred_images, images)) / 2
-            #loss_clip = -torch.log(loss_clip)
-            loss_clip = self.clip.loss2(pred_images, images)
+            loss_clip = (2 - self.clip.loss(noised_images, pred_images, images)) / 2
+            loss_clip = -torch.log(loss_clip)
 
             self.optim_ft.zero_grad()
             loss_clip.backward()
