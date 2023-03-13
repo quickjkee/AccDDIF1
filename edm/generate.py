@@ -54,10 +54,10 @@ def edm_sampler(
         x_next = x_hat + (t_next - t_hat) * d_cur
 
         # Apply 2nd order correction.
-        if i < num_steps - 1:
-            denoised = net(x_next, t_next, class_labels).to(torch.float64)
-            d_prime = (x_next - denoised) / t_next
-            x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
+        #if i < num_steps - 1:
+        #    denoised = net(x_next, t_next, class_labels).to(torch.float64)
+        #    d_prime = (x_next - denoised) / t_next
+        #    x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
 
     return x_next, x0s
 

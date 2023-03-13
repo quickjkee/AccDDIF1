@@ -52,7 +52,7 @@ tuner = FineTuner(model=model,
                   dataset=dataset,
                   device=device,
                   batch_size=b_size,
-                  n_iters=50,
+                  n_iters=150,
                   lr=3e-5)
 
 # RUNNING

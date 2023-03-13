@@ -82,7 +82,7 @@ class FineTuner(object):
             #noised_images = self.model.noising_images(images, t_steps)
             _, xts = self.edm_sampler(net=self.model.net,
                                       is_x0=False,
-                                      second_ord=True,
+                                      second_ord=False,
                                       latents=latents,
                                       num_steps=self.model.num_steps)
             noised_images, t_steps = random.choice(xts)
