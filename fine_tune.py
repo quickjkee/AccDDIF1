@@ -223,11 +223,11 @@ class FineTuner(object):
                 value = copy.deepcopy(value).eval().requires_grad_(False)
                 data[key] = value.cpu()
             del value  # conserve memory
-        with open(os.path.join(INPUT_PATH, f'edm-ffhq-64x64-uncond-vp-{it}.pkl'), 'wb') as f:
+        with open(os.path.join(OUTPUT_PATH, f'edm-ffhq-64x64-uncond-vp-{it}.pkl'), 'wb') as f:
             pickle.dump(data, f)
 
         # Generate samples and calculate fid
-        generate_and_fid.run(path_to_model=os.path.join(INPUT_PATH, f'edm-ffhq-64x64-uncond-vp-{it}.pkl'),
+        generate_and_fid.run(path_to_model=os.path.join(OUTPUT_PATH, f'edm-ffhq-64x64-uncond-vp-{it}.pkl'),
                              n_steps=self.model.num_steps)
     # ----------------------------------------------------------------------------
 
