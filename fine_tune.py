@@ -268,8 +268,8 @@ class FineTuner(object):
             if is_x0:
                 x0s.append(denoised.cpu())
             else:
-                if i != 0:
-                    x0s.append((x_hat.cpu(), t_hat))
+                #if i != 0:
+                x0s.append((x_hat.cpu(), t_hat))
 
             # Apply 2nd order correction.
             if second_ord and i < num_steps - 1:
