@@ -63,8 +63,6 @@ class FineTuner(object):
         for it in tqdm(range(self.n_iters)):
 
             # STEP 1. Sample batch of images
-            #images = next(self.dataset_iterator)[0].to(self.device)
-            #images = images.to(torch.float32) / 127.5 - 1
             latents = torch.randn([self.b_size,
                                    self.model.net.img_channels,
                                    self.model.net.img_resolution,
@@ -78,14 +76,12 @@ class FineTuner(object):
             images = x0s[-2].to(self.device)
 
             # STEP 2. Sample random schedule to noise the images
-            #t_steps = self.model.get_random_from_schedule(images).cuda() #self.model.net.round_sigma(80).cuda()
-            #noised_images = self.model.noising_images(images, t_steps)
             _, xts = self.edm_sampler(net=self.model.net,
                                       is_x0=False,
                                       second_ord=False,
                                       latents=latents,
                                       num_steps=self.model.num_steps)
-            noised_images, t_steps = random.choice(xts)
+            noised_images, t_steps = xts[0]
 
 
             # STEP 3. Predict the real image
@@ -95,15 +91,18 @@ class FineTuner(object):
             # STEP 4. Loss calculation and updates the model
             loss_clip = (2 - self.clip.loss(noised_images, pred_images, images)) / 2
             loss_clip = -torch.log(loss_clip)
+            loss_l1 = torch.nn.L1Loss()(pred_images, images)
+            loss = loss_l1 + loss_clip
 
             self.optim_ft.zero_grad()
-            loss_clip.backward()
+            loss.backward()
             self.optim_ft.step()
 
             print(f"{t_steps}, CLIP {round(loss_clip.item(), 3)}")
 
             # STEP 5 (additional). Estimation
-            self._save_generate_fid(it + 1)
+            if it % 3 == 0:
+                self._save_generate_fid(it + 1)
 
             with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'rb') as handle:
                 fid_stats = pickle.load(handle)
@@ -126,7 +125,6 @@ class FineTuner(object):
                 params_to_update.append(param)
 
         self.optim_ft = torch.optim.Adam(params_to_update,
-                                         weight_decay=0,
                                          lr=self.lr)
     # ----------------------------------------------------------------------------
 
@@ -215,7 +213,6 @@ class FineTuner(object):
     # ----------------------------------------------------------------------------
     @torch.no_grad()
     def _save_generate_fid(self, it):
-
         # Save model
         data = dict(ema=self.model.net)
         for key, value in data.items():
