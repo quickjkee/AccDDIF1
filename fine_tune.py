@@ -101,7 +101,7 @@ class FineTuner(object):
             print(f"{t_steps}, CLIP {round(loss_clip.item(), 3)}")
 
             # STEP 5 (additional). Estimation
-            if it % 20 == 0:
+            if (it + 1) % 20 == 0:
                 self._save_generate_fid(it + 1)
 
             with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'rb') as handle:
