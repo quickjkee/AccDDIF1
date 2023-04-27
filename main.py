@@ -20,6 +20,8 @@ from data_utils import make_dataset, delete_and_create_dir
 
 devices = torch.device('cuda')
 print(f'All devices {devices}')
+print(torch.cuda.device_count())
+
 
 device = torch.device('cuda:0')
 print(f'Working device {device}')
