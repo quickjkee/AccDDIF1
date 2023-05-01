@@ -6,7 +6,7 @@ def run(path_to_model, n_steps):
 
     print('===============================================================================================================================')
     print(f'===================GENERATION STARTED using {path_to_model}===================')
-    subprocess.call(f"CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7 torchrun --standalone --nproc_per_node=7 edm/generate.py --outdir=fid-tmp --seeds=0-49999 --subdirs \
+    subprocess.call(f"CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7 torchrun --standalone --nproc_per_node=7 edm/generate.py --outdir=fid-tmp --seeds=100000-149999 --subdirs \
         --network={path_to_model} --steps={n_steps}", shell=True)
 
 
