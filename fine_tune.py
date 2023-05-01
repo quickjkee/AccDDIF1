@@ -275,7 +275,7 @@ class FineTuner(object):
             if is_x0:
                 x0s.append(denoised.cpu())
             else:
-                #if t_next > 0.1: #if i != 0:
+                #if t_next > 0.1:  #if i != 0:
                 if second_ord:
                     x0s.append((x_next_old.cpu(), t_next))
                 else:
