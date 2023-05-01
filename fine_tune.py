@@ -81,7 +81,8 @@ class FineTuner(object):
                                       second_ord=True,
                                       latents=latents,
                                       num_steps=self.model.num_steps)
-            noised_images, t_steps = xts[0]
+            noised_images, t_steps = random.choice(xts)
+            # noised_images, t_steps = xts[0]
 
 
             # STEP 3. Predict the real image
