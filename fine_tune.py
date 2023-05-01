@@ -78,7 +78,7 @@ class FineTuner(object):
             # STEP 2. Sample random schedule to noise the images
             _, xts = self.edm_sampler(net=self.model.net,
                                       is_x0=False,
-                                      second_ord=False,
+                                      second_ord=True,
                                       latents=latents,
                                       num_steps=self.model.num_steps)
             noised_images, t_steps = random.choice(xts)
@@ -275,9 +275,10 @@ class FineTuner(object):
             if is_x0:
                 x0s.append(denoised.cpu())
             else:
-                #if t_next > 0.1:  #if i != 0:
+                 #if i != 0:
                 if second_ord:
-                    x0s.append((x_next_old.cpu(), t_next))
+                    if t_next > 0.1:
+                        x0s.append((x_next_old.cpu(), t_next))
                 else:
                     if i != 0:
                         x0s.append((x_hat.cpu(), t_hat))
