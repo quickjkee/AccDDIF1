@@ -78,7 +78,7 @@ class FineTuner(object):
             # STEP 2. Sample random schedule to noise the images
             _, xts = self.edm_sampler(net=self.model.net,
                                       is_x0=False,
-                                      second_ord=False,
+                                      second_ord=True,
                                       latents=latents,
                                       num_steps=self.model.num_steps)
             noised_images, t_steps = xts[0]
@@ -101,7 +101,7 @@ class FineTuner(object):
             print(f"{t_steps}, CLIP {round(loss_clip.item(), 3)}")
 
             # STEP 5 (additional). Estimation
-            if (it + 1) % 20 == 0:
+            if (it + 1) % 3 == 0:
                 self._save_generate_fid(it + 1)
 
             with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'rb') as handle:
@@ -125,6 +125,8 @@ class FineTuner(object):
                 params_to_update.append(param)
 
         self.optim_ft = torch.optim.Adam(params_to_update,
+                                         betas=[0.9, 0.999],
+                                         eps=1e-8,
                                          lr=self.lr)
     # ----------------------------------------------------------------------------
 
@@ -262,17 +264,21 @@ class FineTuner(object):
             d_cur = (x_hat - denoised) / t_hat
             x_next = x_hat + (t_next - t_hat) * d_cur
 
+            # Apply 2nd order correction.
+            if second_ord and i < num_steps - 1:
+                x_next_old = x_next
+                denoised = net(x_next_old, t_next, class_labels).to(torch.float64)
+                d_prime = (x_next - denoised) / t_next
+                x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
+
             if is_x0:
                 x0s.append(denoised.cpu())
             else:
-                #if i != 0:
-                x0s.append((x_hat.cpu(), t_hat))
-
-            # Apply 2nd order correction.
-            if second_ord and i < num_steps - 1:
-                denoised = net(x_next, t_next, class_labels).to(torch.float64)
-                d_prime = (x_next - denoised) / t_next
-                x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
+                #if t_next > 0.1: #if i != 0:
+                if second_ord:
+                    x0s.append((x_next_old.cpu(), t_next))
+                else:
+                    x0s.append((x_hat.cpu(), t_hat))
 
         return x_next, x0s
     # ----------------------------------------------------------------------------
