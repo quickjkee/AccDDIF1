@@ -46,7 +46,7 @@ dataset = make_dataset(path_to_data, batch_size=b_size)
 
 # Models
 model = DiffModel(net=net,
-                  num_steps=20,
+                  num_steps=15,
                   device=device)
 clip = DirectionLoss(device=device)
 tuner = FineTuner(model=model,
@@ -54,8 +54,8 @@ tuner = FineTuner(model=model,
                   dataset=dataset,
                   device=device,
                   batch_size=b_size,
-                  n_iters=150,
-                  lr=8e-6)
+                  n_iters=2000,
+                  lr=9e-6)
 
 # RUNNING
 delete_and_create_dir('runs')

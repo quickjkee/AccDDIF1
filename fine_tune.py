@@ -7,6 +7,7 @@ import pickle
 import numpy as np
 
 from tqdm import tqdm
+from random import randint
 
 from data_utils import save_batch, calc_fid, delete_and_create_dir
 from edm import generate_and_fid
@@ -78,10 +79,10 @@ class FineTuner(object):
             # STEP 2. Sample random schedule to noise the images
             _, xts = self.edm_sampler(net=self.model.net,
                                       is_x0=False,
-                                      second_ord=True,
+                                      second_ord=False,
                                       latents=latents,
                                       num_steps=self.model.num_steps)
-            noised_images, t_steps = random.choice(xts)
+            noised_images, t_steps = self._choose_idx_to_train(xts, type='hard')
             # noised_images, t_steps = xts[0]
 
 
@@ -115,6 +116,23 @@ class FineTuner(object):
     # UTILS FUNCTIONS
     #
     ########################################################################
+
+    # ----------------------------------------------------------------------------
+    @torch.no_grad()
+    def _choose_idx_to_train(self, xts, type='simple'):
+        if type == 'simple':
+            noised_images, t_steps = random.choice(xts)
+        else:
+            # Reshape
+            concat_x = [x[0] for x in xts]
+            concat_t = [t[1].reshape(1, -1) for t in xts]
+
+            idxs = [randint(0, len(concat_x)-1) for _ in range(self.b_size)]
+            noised_images = torch.cat([concat_x[idx][i].unsqueeze(0) for i, idx in enumerate(idxs)])
+            t_steps = torch.cat([concat_t[idx] for idx in idxs])
+
+        return noised_images, t_steps
+    # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
     def _conf_opt(self):
@@ -275,13 +293,12 @@ class FineTuner(object):
             if is_x0:
                 x0s.append(denoised.cpu())
             else:
-                 #if i != 0:
                 if second_ord:
                     if t_next > 0.1:
                         x0s.append((x_next_old.cpu(), t_next))
                 else:
-                    if i != 0:
-                        x0s.append((x_hat.cpu(), t_hat))
+                    #if i != 0:
+                    x0s.append((x_hat.cpu(), t_hat))
 
         return x_next, x0s
     # ----------------------------------------------------------------------------
