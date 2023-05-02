@@ -18,7 +18,7 @@ import dnnlib
 from torch_utils import distributed as dist
 from training import dataset
 
-OUTPUT_PATH = os.environ['TMP_OUTPUT_PATH']
+#OUTPUT_PATH = os.environ['TMP_OUTPUT_PATH']
 
 #----------------------------------------------------------------------------
 

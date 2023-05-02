@@ -24,6 +24,7 @@ class FineTuner(object):
                  batch_size,
                  device='cpu',
                  n_iters=50,
+                 is_ema=False,
                  lr=2e-6):
         """
         Fine-tuner that update the provided model
@@ -33,6 +34,11 @@ class FineTuner(object):
         # Base settings
         self.model = model
         self.copy_model = copy.deepcopy(self.model)
+        self.is_ema = is_ema
+
+        if self.is_ema:
+            self.ema = copy.deepcopy(self.model.net).eval().requires_grad_(False)
+            self.ema_beta = 0.999
 
         self.clip = clip
         self.dataset_iterator = dataset
@@ -85,7 +91,6 @@ class FineTuner(object):
             noised_images, t_steps = self._choose_idx_to_train(xts, type='hard')
             # noised_images, t_steps = xts[0]
 
-
             # STEP 3. Predict the real image
             pred_images = self.model.single_step(noised_images.to(self.device),
                                                  t_steps)
@@ -100,15 +105,19 @@ class FineTuner(object):
             loss.backward()
             self.optim_ft.step()
 
-            print(f"{t_steps}, CLIP {round(loss_clip.item(), 3)}")
+            if self.is_ema:
+                self._update_ema()
+
+            print(f"{it + 1}, CLIP {round(loss_clip.item(), 3)}")
 
             # STEP 5 (additional). Estimation
-            if (it + 1) % 3 == 0:
+            if (it + 1) % 15 == 0:
                 self._save_generate_fid(it + 1)
 
             with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'rb') as handle:
                 fid_stats = pickle.load(handle)
                 print(fid_stats)
+
     # ----------------------------------------------------------------------------
 
     ########################################################################
@@ -116,6 +125,12 @@ class FineTuner(object):
     # UTILS FUNCTIONS
     #
     ########################################################################
+
+    # ----------------------------------------------------------------------------
+    def _update_ema(self):
+        for p_ema, p_net in zip(self.ema.parameters(), self.model.net.parameters()):
+            p_ema.copy_(p_net.detach().lerp(p_ema, self.ema_beta))
+    # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
     @torch.no_grad()
@@ -127,7 +142,7 @@ class FineTuner(object):
             concat_x = [x[0] for x in xts]
             concat_t = [t[1].reshape(1, -1) for t in xts]
 
-            idxs = [randint(0, len(concat_x)-1) for _ in range(self.b_size)]
+            idxs = [randint(0, len(concat_x) - 1) for _ in range(self.b_size)]
             noised_images = torch.cat([concat_x[idx][i].unsqueeze(0) for i, idx in enumerate(idxs)])
             t_steps = torch.cat([concat_t[idx] for idx in idxs])
 
@@ -234,8 +249,14 @@ class FineTuner(object):
     # ----------------------------------------------------------------------------
     @torch.no_grad()
     def _save_generate_fid(self, it):
+        # Wheter to update ema
+        if self.is_ema:
+            network = self.ema
+        else:
+            network = self.model.net
+
         # Save model
-        data = dict(ema=self.model.net)
+        data = dict(ema=network)
         for key, value in data.items():
             if isinstance(value, torch.nn.Module):
                 value = copy.deepcopy(value).eval().requires_grad_(False)
@@ -264,7 +285,7 @@ class FineTuner(object):
         # Time step discretization.
         step_indices = torch.arange(num_steps, dtype=torch.float64, device=latents.device)
         t_steps = (sigma_max ** (1 / rho) + step_indices / (num_steps - 1) * (
-                    sigma_min ** (1 / rho) - sigma_max ** (1 / rho))) ** rho
+                sigma_min ** (1 / rho) - sigma_max ** (1 / rho))) ** rho
         t_steps = torch.cat([net.round_sigma(t_steps), torch.zeros_like(t_steps[:1])])  # t_N = 0
 
         # Main sampling loop.
@@ -297,7 +318,7 @@ class FineTuner(object):
                     if t_next > 0.1:
                         x0s.append((x_next_old.cpu(), t_next))
                 else:
-                    #if i != 0:
+                    # if i != 0:
                     x0s.append((x_hat.cpu(), t_hat))
 
         return x_next, x0s
