@@ -307,8 +307,8 @@ class FineTuner(object):
             # Apply 2nd order correction.
             if second_ord and i < num_steps - 1:
                 x_next_old = x_next
-                denoised = net(x_next_old, t_next, class_labels).to(torch.float64)
-                d_prime = (x_next - denoised) / t_next
+                denoised1 = net(x_next_old, t_next, class_labels).to(torch.float64)
+                d_prime = (x_next - denoised1) / t_next
                 x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
 
             if is_x0:
