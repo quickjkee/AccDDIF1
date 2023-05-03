@@ -27,7 +27,7 @@ device = torch.device('cuda:0')
 print(f'Working device {device}')
 
 # Load the network
-network_pkl = f'{INPUT_PATH}/edm-ffhq-64x64-uncond-vp.pkl'
+network_pkl = f'{INPUT_PATH}/AccDDIF/ultramar_exp_estimate/checkpoints_saved_ffhq/edm-ffhq-64x64-uncond-vp.pkl'
 
 print(f'Loading network from "{network_pkl}"...')
 with open(network_pkl, 'rb') as handle:
@@ -40,13 +40,13 @@ with open(network_pkl, 'rb') as handle:
 ##############################
 
 # Dataset
-b_size = 64
+b_size = 128
 path_to_data = 'datasets/ffhq-64x64.zip'
 dataset = make_dataset(path_to_data, batch_size=b_size)
 
 # Models
 model = DiffModel(net=net,
-                  num_steps=15,
+                  num_steps=10,
                   device=device)
 clip = DirectionLoss(device=device)
 tuner = FineTuner(model=model,
@@ -54,9 +54,9 @@ tuner = FineTuner(model=model,
                   dataset=dataset,
                   device=device,
                   batch_size=b_size,
-                  is_ema=True,
+                  is_ema=False,
                   n_iters=5000,
-                  lr=3e-5)
+                  lr=2e-5)
 
 # RUNNING
 delete_and_create_dir('runs')
