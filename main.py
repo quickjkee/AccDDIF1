@@ -40,7 +40,7 @@ with open(network_pkl, 'rb') as handle:
 ##############################
 
 # Dataset
-b_size = 128
+b_size = 256
 path_to_data = 'datasets/ffhq-64x64.zip'
 dataset = make_dataset(path_to_data, batch_size=b_size)
 
@@ -56,7 +56,7 @@ tuner = FineTuner(model=model,
                   batch_size=b_size,
                   is_ema=False,
                   n_iters=5000,
-                  lr=2e-5)
+                  lr=3e-5)
 
 # RUNNING
 delete_and_create_dir('runs')
