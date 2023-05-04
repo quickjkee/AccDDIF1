@@ -14,6 +14,7 @@ import click
 import tqdm
 import pickle
 import numpy as np
+import subprocess
 import torch
 import PIL.Image
 import dnnlib
@@ -324,6 +325,9 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
 
     # Done.
     torch.distributed.barrier()
+
+    if dist.get_rank() == 0:
+        subprocess.call('nvidia-smi')
     dist.print0('Done.')
 
 #----------------------------------------------------------------------------
