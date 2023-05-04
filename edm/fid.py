@@ -115,7 +115,7 @@ def main():
 @click.option('--ref', 'ref_path',      help='Dataset reference statistics ', metavar='NPZ|URL',    type=str, required=True)
 @click.option('--num', 'num_expected',  help='Number of images to use', metavar='INT',              type=click.IntRange(min=2), default=50000, show_default=True)
 @click.option('--seed',                 help='Random seed for selecting the images', metavar='INT', type=int, default=0, show_default=True)
-@click.option('--batch',                help='Maximum batch size', metavar='INT',                   type=click.IntRange(min=1), default=256, show_default=True)
+@click.option('--batch',                help='Maximum batch size', metavar='INT',                   type=click.IntRange(min=1), default=512, show_default=True)
 @click.option('--ref_inc', 'ref_path_inc',      help='Dataset reference statistics ', metavar='NPZ|URL',    type=str, required=True)
 
 def calc(image_path, ref_path, num_expected, seed, batch, ref_path_inc):
@@ -152,8 +152,8 @@ def calc(image_path, ref_path, num_expected, seed, batch, ref_path_inc):
         with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'wb') as handle:
             pickle.dump(fid_stats, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    if dist.get_rank() == 0:
-        subprocess.call('nvidia-smi')
+    #if dist.get_rank() == 0:
+    #    subprocess.call('nvidia-smi')
     torch.distributed.barrier()
 
 #----------------------------------------------------------------------------
