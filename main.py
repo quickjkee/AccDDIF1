@@ -41,6 +41,7 @@ with open(network_pkl, 'rb') as handle:
 
 # Dataset
 b_size = 64
+print(f'batch size {b_size}')
 path_to_data = 'datasets/ffhq-64x64.zip'
 dataset = make_dataset(path_to_data, batch_size=b_size)
 
