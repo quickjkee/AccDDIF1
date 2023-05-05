@@ -56,7 +56,7 @@ tuner = FineTuner(model=model,
                   batch_size=b_size,
                   is_ema=False,
                   n_iters=5000,
-                  lr=3e-5)
+                  lr=2e-5)
 
 # RUNNING
 delete_and_create_dir('runs')
