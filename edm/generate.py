@@ -37,10 +37,6 @@ def edm_sampler(
     t_steps = (sigma_max ** (1 / rho) + step_indices / (num_steps - 1) * (sigma_min ** (1 / rho) - sigma_max ** (1 / rho))) ** rho
     t_steps = torch.cat([net.round_sigma(t_steps), torch.zeros_like(t_steps[:1])]) # t_N = 0
 
-    # DELETE
-    t_steps = torch.cat([t_steps[:6], torch.tensor([1.29543132, 0.8827144, 0.5512356, 0.4401, 0.002], dtype=torch.float64, device=latents.device)])
-    # DELETE
-
     # Main sampling loop.
     x_next = latents.to(torch.float64) * t_steps[0]
     x0s = []
