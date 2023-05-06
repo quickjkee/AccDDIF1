@@ -38,7 +38,7 @@ def edm_sampler(
     t_steps = torch.cat([net.round_sigma(t_steps), torch.zeros_like(t_steps[:1])]) # t_N = 0
 
     # DELETE
-    t_steps = torch.cat([t_steps[:5], torch.linspace(t_steps[5], t_steps[6], 6)])
+    t_steps = torch.cat([t_steps[:5], torch.linspace(t_steps[5], t_steps[6], 6, device=latents.device)])
     # DELETE
 
     # Main sampling loop.
