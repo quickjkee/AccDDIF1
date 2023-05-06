@@ -4,7 +4,7 @@ import shutil
 
 def run(path_to_model, n_steps):
 
-    steps = [5, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40]
+    steps = [n_steps]
     for n_steps in steps:
         subprocess.call('nvidia-smi')
         print(n_steps)
