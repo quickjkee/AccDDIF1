@@ -248,12 +248,16 @@ class FineTuner(object):
 
     # ----------------------------------------------------------------------------
     @torch.no_grad()
-    def _save_generate_fid(self, it):
-        # Wheter to update ema
+    def _save_generate_fid(self, it, num_steps=None):
+        # Whether to update ema
         if self.is_ema:
             network = self.ema
         else:
             network = self.model.net
+
+        # Check for steps
+        if num_steps is None:
+            num_steps = self.model.num_steps
 
         # Save model
         data = dict(ema=network)
@@ -267,7 +271,7 @@ class FineTuner(object):
 
         # Generate samples and calculate fid
         generate_and_fid.run(path_to_model=os.path.join(OUTPUT_PATH, f'edm-ffhq-64x64-uncond-vp-{it}.pkl'),
-                             n_steps=self.model.num_steps)
+                             n_steps=num_steps)
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
