@@ -94,7 +94,7 @@ class DirectionLoss(torch.nn.Module):
             true_direction = (target_encoding - src_encoding)
             true_direction /= true_direction.norm(dim=-1, keepdim=True)
 
-        return self.direction_loss(pred_direction, true_direction).mean()
+        return self.direction_loss(pred_direction, true_direction)
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
