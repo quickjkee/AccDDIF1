@@ -4,9 +4,8 @@ import shutil
 
 def run(path_to_model, n_steps):
 
-    steps = [n_steps, n_steps + 2, n_steps + 4]
+    steps = [n_steps, n_steps + 2, n_steps + 7]
     for n_steps in steps:
-        subprocess.call('nvidia-smi')
         print(n_steps)
         print('===============================================================================================================================')
         print(f'===================GENERATION STARTED using {path_to_model}===================')

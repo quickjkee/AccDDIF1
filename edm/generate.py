@@ -326,8 +326,6 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
     # Done.
     torch.distributed.barrier()
 
-    if dist.get_rank() == 0:
-        subprocess.call('nvidia-smi')
     dist.print0('Done.')
 
 #----------------------------------------------------------------------------
