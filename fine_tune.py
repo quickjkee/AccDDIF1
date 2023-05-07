@@ -84,6 +84,7 @@ class FineTuner(object):
 
             # STEP 2. Sample random schedule to noise the images
             num_steps = self.model.num_steps
+            # num_steps = random.randint(2, 30)
             _, xts = self.edm_sampler(net=self.model.net,
                                       is_x0=False,
                                       second_ord=False,
@@ -100,7 +101,6 @@ class FineTuner(object):
             weight = (t_steps ** 2 + 0.5 ** 2) / (t_steps * 0.5 + 0.5) ** 2
             loss_clip = (2 - self.clip.loss(noised_images, pred_images, images)) / 2
             loss_clip = -torch.log(loss_clip)
-            #loss_l1 = torch.nn.L1Loss()(pred_images, images)
             loss = (weight * (loss_clip)).mean()
 
             self.optim_ft.zero_grad()
