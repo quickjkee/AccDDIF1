@@ -110,7 +110,7 @@ class FineTuner(object):
             if self.is_ema:
                 self._update_ema()
 
-            print(f"{it + 1}, CLIP {round(loss_clip.item(), 3)}")
+            print(f"{it + 1}, CLIP {round(loss.item(), 3)}")
 
             # STEP 5 (additional). Estimation
             if (it + 1) % 20 == 0:
