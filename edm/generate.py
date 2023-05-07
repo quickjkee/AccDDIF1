@@ -325,7 +325,6 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
 
     # Done.
     torch.distributed.barrier()
-
     dist.print0('Done.')
 
 #----------------------------------------------------------------------------

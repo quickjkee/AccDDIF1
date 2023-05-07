@@ -27,7 +27,8 @@ device = torch.device('cuda:0')
 print(f'Working device {device}')
 
 # Load the network
-network_pkl = f'{INPUT_PATH}/edm-ffhq-64x64-uncond-vp.pkl' #f'{INPUT_PATH}/AccDDIF/ultramar_exp_estimate/checkpoints_saved_ffhq/edm_5_steps_first_ord_hard.pkl'
+# f'{INPUT_PATH}/edm-ffhq-64x64-uncond-vp.pkl'
+network_pkl = f'{INPUT_PATH}/AccDDIF/ultramar_exp_estimate/checkpoints_saved_ffhq/etot.pkl'
 
 print(f'Loading network from "{network_pkl}"...')
 with open(network_pkl, 'rb') as handle:

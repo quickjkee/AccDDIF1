@@ -83,11 +83,12 @@ class FineTuner(object):
             images = x0s[-2].to(self.device)
 
             # STEP 2. Sample random schedule to noise the images
+            num_steps = random.randint(2, 30)
             _, xts = self.edm_sampler(net=self.model.net,
                                       is_x0=False,
                                       second_ord=False,
                                       latents=latents,
-                                      num_steps=self.model.num_steps)
+                                      num_steps=num_steps)
             noised_images, t_steps = self._choose_idx_to_train(xts, type='hard')
             # noised_images, t_steps = xts[0]
 
@@ -98,8 +99,7 @@ class FineTuner(object):
             # STEP 4. Loss calculation and updates the model
             loss_clip = (2 - self.clip.loss(noised_images, pred_images, images)) / 2
             loss_clip = -torch.log(loss_clip)
-            loss_l1 = torch.nn.L1Loss()(pred_images, images)
-            loss = loss_l1 + loss_clip
+            loss = loss_clip
 
             self.optim_ft.zero_grad()
             loss.backward()
@@ -111,8 +111,8 @@ class FineTuner(object):
             print(f"{it + 1}, CLIP {round(loss_clip.item(), 3)}")
 
             # STEP 5 (additional). Estimation
-            if ((it + 1) % 5 == 0) and it > 250:
-                self._save_generate_fid(it + 1)
+            if (it + 1) % 20 == 0:
+                self._save_generate_fid(it + 1, num_steps=num_steps)
 
             with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'rb') as handle:
                 fid_stats = pickle.load(handle)
