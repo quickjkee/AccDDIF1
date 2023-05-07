@@ -4,7 +4,7 @@ import shutil
 
 def run(path_to_model, n_steps):
 
-    steps = [n_steps, n_steps + 2, n_steps + 7]
+    steps = [n_steps]
     for n_steps in steps:
         print(n_steps)
         print('===============================================================================================================================')
