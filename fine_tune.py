@@ -83,8 +83,8 @@ class FineTuner(object):
             images = x0s[-2].to(self.device)
 
             # STEP 2. Sample random schedule to noise the images
-            num_steps = self.model.num_steps
-            # num_steps = random.randint(2, 30)
+            #num_steps = self.model.num_steps
+            num_steps = random.randint(2, 30)
             _, xts = self.edm_sampler(net=self.model.net,
                                       is_x0=False,
                                       second_ord=False,
