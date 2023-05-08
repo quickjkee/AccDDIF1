@@ -114,7 +114,7 @@ class FineTuner(object):
 
             # STEP 5 (additional). Estimation
             if (it + 1) % 20 == 0:
-                self._save_generate_fid(it + 1, num_steps=num_steps)
+                self._save_generate_fid(it + 1, num_steps=self.model.num_steps)
 
             with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'rb') as handle:
                 fid_stats = pickle.load(handle)
