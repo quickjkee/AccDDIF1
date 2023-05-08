@@ -28,7 +28,7 @@ print(f'Working device {device}')
 
 # Load the network
 # f'{INPUT_PATH}/edm-ffhq-64x64-uncond-vp.pkl'
-network_pkl = f'{INPUT_PATH}/AccDDIF/ultramar_exp_estimate/checkpoints_saved_ffhq/etot.pkl'
+network_pkl = f'{INPUT_PATH}/edm-ffhq-64x64-uncond-vp.pkl' # f'{INPUT_PATH}/AccDDIF/ultramar_exp_estimate/checkpoints_saved_ffhq/etot.pkl'
 
 print(f'Loading network from "{network_pkl}"...')
 with open(network_pkl, 'rb') as handle:
