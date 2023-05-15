@@ -310,7 +310,8 @@ def main(network_pkl, network_pkl_copy, sigma_max, outdir, subdirs, seeds, class
                                        randn_like=rnd.randn_like, second_ord=False)
         x_init = x0_images[6].to(device)
 
-        images, x0_images = sampler_fn(net=copy_net, x_init=x_init, sigma_max=sigma_max, num_steps=10, second_ord=True,
+        images, x0_images = sampler_fn(net=copy_net, x_init=x_init, sigma_max=sigma_max,
+                                       num_steps=sampler_kwargs.num_steps, second_ord=True,
                                        latents=latents2, class_labels=class_labels, randn_like=rnd.randn_like)
 
         # Save images.
