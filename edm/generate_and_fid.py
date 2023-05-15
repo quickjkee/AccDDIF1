@@ -4,8 +4,8 @@ import shutil
 
 def run(path_to_model, path_to_copy, n_steps):
 
-    steps = [10, 11, 12, 15, 20]
-    sigmas = [3, 2.5, 2, 1.5, 3.5, 4, 4.5, 5]
+    steps = [20, 21, 22, 25, 30, 33]
+    sigmas = [3]
     for sigma in sigmas:
         for n_steps in steps:
             print(n_steps)
