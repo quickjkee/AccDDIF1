@@ -40,6 +40,7 @@ def edm_sampler(
 
     # Main sampling loop.
     x_next = x_init + latents.to(torch.float64) * sigma_max
+    print(sigma_max)
     x0s = []
     for i, (t_cur, t_next) in enumerate(zip(t_steps[:-1], t_steps[1:])): # 0, ..., N-1
         x_cur = x_next
