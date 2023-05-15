@@ -241,7 +241,7 @@ def parse_int_list(s):
 @click.option('--schedule',                help='Ablate noise schedule sigma(t)', metavar='vp|ve|linear',           type=click.Choice(['vp', 've', 'linear']))
 @click.option('--scaling',                 help='Ablate signal scaling s(t)', metavar='vp|none',                    type=click.Choice(['vp', 'none']))
 
-def main(network_pkl, network_pkl_copy, sigma_max, outdir, subdirs, seeds, class_idx, max_batch_size, device=torch.device('cuda'), **sampler_kwargs):
+def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, seeds, class_idx, max_batch_size, device=torch.device('cuda'), **sampler_kwargs):
     """Generate random images using the techniques described in the paper
     "Elucidating the Design Space of Diffusion-Based Generative Models".
 
@@ -311,7 +311,7 @@ def main(network_pkl, network_pkl_copy, sigma_max, outdir, subdirs, seeds, class
         x_init = x0_images[6].to(device)
 
         images, x0_images = sampler_fn(net=copy_net, x_init=x_init, sigma_max=sigma_max,
-                                       num_steps=sampler_kwargs.num_steps, second_ord=True,
+                                       num_steps=num_steps, second_ord=True,
                                        latents=latents2, class_labels=class_labels, randn_like=rnd.randn_like)
 
         # Save images.
