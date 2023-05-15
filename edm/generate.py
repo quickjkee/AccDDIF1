@@ -274,7 +274,7 @@ def main(network_pkl, network_pkl_copy, sigma_max, outdir, subdirs, seeds, class
         net = pickle.load(handle)['ema'].to(device)
 
     dist.print0(f'Loading copy network from "{network_pkl_copy}"...')
-    with open(network_pkl, 'rb') as handle:
+    with open(network_pkl_copy, 'rb') as handle:
         copy_net = pickle.load(handle)['ema'].to(device)
 
     # Other ranks follow.
@@ -308,10 +308,10 @@ def main(network_pkl, network_pkl_copy, sigma_max, outdir, subdirs, seeds, class
         # Init samples
         images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels,
                                        randn_like=rnd.randn_like, second_ord=False)
-        #x_init = x0_images[6].to(device)
+        x_init = x0_images[6].to(device)
 
-        #images, x0_images = sampler_fn(net=copy_net, x_init=x_init, sigma_max=sigma_max, num_steps=10, second_ord=True,
-        #                               latents=latents2, class_labels=class_labels, randn_like=rnd.randn_like)
+        images, x0_images = sampler_fn(net=copy_net, x_init=x_init, sigma_max=sigma_max, num_steps=10, second_ord=True,
+                                       latents=latents2, class_labels=class_labels, randn_like=rnd.randn_like)
 
         # Save images.
         images_np = (images * 127.5 + 128).clip(0, 255).to(torch.uint8).permute(0, 2, 3, 1).cpu().numpy()
