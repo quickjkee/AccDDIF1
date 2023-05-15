@@ -307,11 +307,11 @@ def main(network_pkl, network_pkl_copy, sigma_max, outdir, subdirs, seeds, class
         sampler_fn = edm_sampler
 
         # Init samples
-        images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels, randn_like=rnd.randn_like, **sampler_kwargs)
+        images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels, randn_like=rnd.randn_like)
         x_init = x0_images[6].to(device)
 
         images, x0_images = sampler_fn(net=copy_net, x_init=x_init, sigma_max=sigma_max, num_steps=10, second_ord=True, latents=latents2,
-                                       class_labels=class_labels, randn_like=rnd.randn_like, **sampler_kwargs)
+                                       class_labels=class_labels, randn_like=rnd.randn_like)
 
         # Save images.
         images_np = (images * 127.5 + 128).clip(0, 255).to(torch.uint8).permute(0, 2, 3, 1).cpu().numpy()
