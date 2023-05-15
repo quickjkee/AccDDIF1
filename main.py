@@ -27,11 +27,13 @@ device = torch.device('cuda:0')
 print(f'Working device {device}')
 
 # Load the network
-# f'{INPUT_PATH}/edm-ffhq-64x64-uncond-vp.pkl'
-network_pkl = f'{INPUT_PATH}/edm-ffhq-64x64-uncond-vp.pkl' # f'{INPUT_PATH}/AccDDIF/ultramar_exp_estimate/checkpoints_saved_ffhq/etot.pkl'
 
+network_pkl = f'{INPUT_PATH}/edm-ffhq-64x64-uncond-vp.pkl'
 print(f'Loading network from "{network_pkl}"...')
 with open(network_pkl, 'rb') as handle:
+    copy_net = pickle.load(handle)['ema'].to(device)
+
+with open(f'{INPUT_PATH}/AccDDIF/ultramar_exp_estimate/checkpoints_saved_ffhq/edm_5_steps_first_ord_hard.pkl', 'rb') as handle:
     net = pickle.load(handle)['ema'].to(device)
 
 ##############################
@@ -50,11 +52,16 @@ dataset = make_dataset(path_to_data, batch_size=b_size)
 model = DiffModel(net=net,
                   num_steps=10,
                   device=device)
+copy_model = DiffModel(net=copy_net,
+                  num_steps=40,
+                  device=device)
+
 clip = DirectionLoss(device=device)
 tuner = FineTuner(model=model,
                   clip=clip,
                   dataset=dataset,
                   device=device,
+                  copy_model=copy_model,
                   batch_size=b_size,
                   is_ema=False,
                   n_iters=5000,

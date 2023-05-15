@@ -25,8 +25,9 @@ from torch_utils import distributed as dist
 
 def edm_sampler(
     net, latents, class_labels=None, randn_like=torch.randn_like,
-    num_steps=18, sigma_min=0.002, sigma_max=80, rho=7,
+    x_init=0.0, num_steps=18, sigma_min=0.002, sigma_max=80, rho=7,
     S_churn=0, S_min=0, S_max=float('inf'), S_noise=1,
+    second_ord=False,
 ):
     # Adjust noise levels based on what's supported by the network.
     sigma_min = max(sigma_min, net.sigma_min)
@@ -38,7 +39,7 @@ def edm_sampler(
     t_steps = torch.cat([net.round_sigma(t_steps), torch.zeros_like(t_steps[:1])]) # t_N = 0
 
     # Main sampling loop.
-    x_next = latents.to(torch.float64) * t_steps[0]
+    x_next = x_init + latents.to(torch.float64) * sigma_max
     x0s = []
     for i, (t_cur, t_next) in enumerate(zip(t_steps[:-1], t_steps[1:])): # 0, ..., N-1
         x_cur = x_next
@@ -55,10 +56,11 @@ def edm_sampler(
         x_next = x_hat + (t_next - t_hat) * d_cur
 
         # Apply 2nd order correction.
-        #if i < num_steps - 1:
-        #    denoised = net(x_next, t_next, class_labels).to(torch.float64)
-        #    d_prime = (x_next - denoised) / t_next
-        #    x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
+        if second_ord:
+            if i < num_steps - 1:
+                denoised = net(x_next, t_next, class_labels).to(torch.float64)
+                d_prime = (x_next - denoised) / t_next
+                x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
 
     return x_next, x0s
 
@@ -218,6 +220,8 @@ def parse_int_list(s):
 
 @click.command()
 @click.option('--network', 'network_pkl',  help='Network pickle filename', metavar='PATH|URL',                      type=str, required=True)
+@click.option('--network_copy', 'network_pkl_copy',  help='Network pickle filename', metavar='PATH|URL',            type=str, required=True)
+@click.option('--sigma_max', 'sigma_max',  help='Network pickle filename', metavar='PATH|URL',                      type=float, required=True)
 @click.option('--outdir',                  help='Where to save the output images', metavar='DIR',                   type=str, required=True)
 @click.option('--seeds',                   help='Random seeds (e.g. 1,2,5-10)', metavar='LIST',                     type=parse_int_list, default='0-63', show_default=True)
 @click.option('--subdirs',                 help='Create subdirectory for every 1000 seeds',                         is_flag=True)
@@ -238,7 +242,7 @@ def parse_int_list(s):
 @click.option('--schedule',                help='Ablate noise schedule sigma(t)', metavar='vp|ve|linear',           type=click.Choice(['vp', 've', 'linear']))
 @click.option('--scaling',                 help='Ablate signal scaling s(t)', metavar='vp|none',                    type=click.Choice(['vp', 'none']))
 
-def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=torch.device('cuda'), **sampler_kwargs):
+def main(network_pkl, network_pkl_copy, sigma_max, outdir, subdirs, seeds, class_idx, max_batch_size, device=torch.device('cuda'), **sampler_kwargs):
     """Generate random images using the techniques described in the paper
     "Elucidating the Design Space of Diffusion-Based Generative Models".
 
@@ -270,6 +274,10 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
     with open(network_pkl, 'rb') as handle:
         net = pickle.load(handle)['ema'].to(device)
 
+    dist.print0(f'Loading copy network from "{network_pkl_copy}"...')
+    with open(network_pkl, 'rb') as handle:
+        copy_net = pickle.load(handle)['ema'].to(device)
+
     # Other ranks follow.
     if dist.get_rank() == 0:
         torch.distributed.barrier()
@@ -284,7 +292,8 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
 
         # Pick latents and labels.
         rnd = StackedRandomGenerator(device, batch_seeds)
-        latents = rnd.randn([batch_size, net.img_channels, net.img_resolution, net.img_resolution], device=device)
+        latents1 = rnd.randn([batch_size, net.img_channels, net.img_resolution, net.img_resolution], device=device)
+        latents2 = rnd.randn([batch_size, net.img_channels, net.img_resolution, net.img_resolution], device=device)
         class_labels = None
         if net.label_dim:
             class_labels = torch.eye(net.label_dim, device=device)[rnd.randint(net.label_dim, size=[batch_size], device=device)]
@@ -295,8 +304,14 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
         # Generate images.
         sampler_kwargs = {key: value for key, value in sampler_kwargs.items() if value is not None}
         have_ablation_kwargs = any(x in sampler_kwargs for x in ['solver', 'discretization', 'schedule', 'scaling'])
-        sampler_fn = ablation_sampler if have_ablation_kwargs else edm_sampler
-        images, x0_images = sampler_fn(net, latents, class_labels, randn_like=rnd.randn_like, **sampler_kwargs)
+        sampler_fn = edm_sampler
+
+        # Init samples
+        images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels, randn_like=rnd.randn_like, **sampler_kwargs)
+        x_init = x0_images[6].to(device)
+
+        images, x0_images = sampler_fn(net=copy_net, x_init=x_init, sigma_max=sigma_max, num_steps=10, second_ord=True, latents=latents2,
+                                       class_labels=class_labels, randn_like=rnd.randn_like, **sampler_kwargs)
 
         # Save images.
         images_np = (images * 127.5 + 128).clip(0, 255).to(torch.uint8).permute(0, 2, 3, 1).cpu().numpy()

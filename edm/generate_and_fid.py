@@ -2,7 +2,7 @@ import subprocess
 import shutil
 
 
-def run(path_to_model, n_steps):
+def run(path_to_model, path_to_copy, n_steps):
 
     steps = [n_steps]
     for n_steps in steps:
@@ -10,8 +10,7 @@ def run(path_to_model, n_steps):
         print('===============================================================================================================================')
         print(f'===================GENERATION STARTED using {path_to_model}===================')
         subprocess.call(f"CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7 torchrun --standalone --nproc_per_node=7 edm/generate.py --outdir=fid-tmp --seeds=50000-99999 --subdirs \
-            --network={path_to_model} --steps={n_steps}", shell=True)
-
+            --network={path_to_model} --network_copy={path_to_copy} --sigma_max=3 --steps={n_steps}", shell=True)
 
         print('===================FID CALCULATION===================')
         print('====================================')

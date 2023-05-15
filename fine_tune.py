@@ -22,6 +22,7 @@ class FineTuner(object):
                  clip,
                  dataset,
                  batch_size,
+                 copy_model,
                  device='cpu',
                  n_iters=50,
                  is_ema=False,
@@ -33,7 +34,7 @@ class FineTuner(object):
 
         # Base settings
         self.model = model
-        self.copy_model = copy.deepcopy(self.model)
+        self.copy_model = copy_model
         self.is_ema = is_ema
 
         if self.is_ema:
@@ -256,6 +257,7 @@ class FineTuner(object):
             network = self.ema
         else:
             network = self.model.net
+        copy_network = self.copy_model.net
 
         # Check for steps
         if num_steps is None:
@@ -271,9 +273,19 @@ class FineTuner(object):
         with open(os.path.join(OUTPUT_PATH, f'edm-ffhq-64x64-uncond-vp-{it}.pkl'), 'wb') as f:
             pickle.dump(data, f)
 
+        data = dict(ema=copy_network)
+        for key, value in data.items():
+            if isinstance(value, torch.nn.Module):
+                value = copy.deepcopy(value).eval().requires_grad_(False)
+                data[key] = value.cpu()
+            del value  # conserve memory
+        with open(os.path.join(OUTPUT_PATH, f'edm-ffhq-64x64-uncond-vp-copy-{it}.pkl'), 'wb') as f:
+            pickle.dump(data, f)
+
         # Generate samples and calculate fid
         generate_and_fid.run(path_to_model=os.path.join(OUTPUT_PATH, f'edm-ffhq-64x64-uncond-vp-{it}.pkl'),
-                             n_steps=num_steps)
+                             n_steps=num_steps,
+                             path_to_copy=os.path.join(OUTPUT_PATH, f'edm-ffhq-64x64-uncond-vp-copy-{it}.pkl'))
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
