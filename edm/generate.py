@@ -292,7 +292,7 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
         # Pick latents and labels.
         rnd = StackedRandomGenerator(device, batch_seeds)
         latents1 = rnd.randn([batch_size, net.img_channels, net.img_resolution, net.img_resolution], device=device)
-        latents2 = torch.randn([batch_size, net.img_channels, net.img_resolution, net.img_resolution], device=device)
+        latents2 = rnd.randn([batch_size, net.img_channels, net.img_resolution, net.img_resolution], device=device)
         class_labels = None
         if net.label_dim:
             class_labels = torch.eye(net.label_dim, device=device)[rnd.randint(net.label_dim, size=[batch_size], device=device)]
