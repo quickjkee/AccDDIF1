@@ -40,7 +40,6 @@ def edm_sampler(
 
     # Main sampling loop.
     x_next = x_init + latents.to(torch.float64) * sigma_max
-    print(sigma_max)
     x0s = []
     for i, (t_cur, t_next) in enumerate(zip(t_steps[:-1], t_steps[1:])): # 0, ..., N-1
         x_cur = x_next
@@ -292,7 +291,7 @@ def main(network_pkl, network_pkl_copy, sigma_max, outdir, subdirs, seeds, class
 
         # Pick latents and labels.
         rnd = StackedRandomGenerator(device, batch_seeds)
-        latents1 = torch.randn([batch_size, net.img_channels, net.img_resolution, net.img_resolution], device=device)
+        latents1 = rnd.randn([batch_size, net.img_channels, net.img_resolution, net.img_resolution], device=device)
         latents2 = torch.randn([batch_size, net.img_channels, net.img_resolution, net.img_resolution], device=device)
         class_labels = None
         if net.label_dim:
@@ -308,11 +307,11 @@ def main(network_pkl, network_pkl_copy, sigma_max, outdir, subdirs, seeds, class
 
         # Init samples
         images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels,
-                                       randn_like=torch.randn_like)
+                                       randn_like=rnd.randn_like, second_ord=False)
         x_init = x0_images[6].to(device)
 
         images, x0_images = sampler_fn(net=copy_net, x_init=x_init, sigma_max=sigma_max, num_steps=10, second_ord=True,
-                                       latents=latents2, class_labels=class_labels) #randn_like=rnd.randn_like)
+                                       latents=latents2, class_labels=class_labels, randn_like=rnd.randn_like)
 
         # Save images.
         images_np = (images * 127.5 + 128).clip(0, 255).to(torch.uint8).permute(0, 2, 3, 1).cpu().numpy()
