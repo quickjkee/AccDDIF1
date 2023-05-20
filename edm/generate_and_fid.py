@@ -12,7 +12,7 @@ def run(path_to_model, path_to_copy, n_steps):
             print('===============================================================================================================================')
             print(f'===================GENERATION STARTED using {path_to_model}===================')
             print(f'===================STEPS {n_steps}, SIGMA {sigma}===================')
-            subprocess.call(f"CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7 torchrun --standalone --nproc_per_node=7 edm/generate.py --outdir=fid-tmp --seeds=50000-99999 --subdirs \
+            subprocess.call(f"CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7 torchrun --standalone --nproc_per_node=7 edm/generate.py --outdir=fid-tmp --seeds=0-49999 --subdirs \
                 --network={path_to_model} --network_copy={path_to_copy} --sigma_max={sigma} --steps={n_steps}", shell=True)
 
             print('===================FID CALCULATION===================')
