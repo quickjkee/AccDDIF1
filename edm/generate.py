@@ -27,19 +27,33 @@ def edm_sampler(
     net, latents, class_labels=None, randn_like=torch.randn_like,
     x_init=0.0, num_steps=18, sigma_min=0.002, sigma_max=80, rho=7,
     S_churn=0, S_min=0, S_max=float('inf'), S_noise=1,
-    second_ord=False,
+    second_ord=False, correction=False,
 ):
     # Adjust noise levels based on what's supported by the network.
     sigma_min = max(sigma_min, net.sigma_min)
     sigma_max = min(sigma_max, net.sigma_max)
 
-    # Time step discretization.
-    step_indices = torch.arange(num_steps, dtype=torch.float64, device=latents.device)
-    t_steps = (sigma_max ** (1 / rho) + step_indices / (num_steps - 1) * (sigma_min ** (1 / rho) - sigma_max ** (1 / rho))) ** rho
-    t_steps = torch.cat([net.round_sigma(t_steps), torch.zeros_like(t_steps[:1])]) # t_N = 0
+    if correction is not False:
+        w2 = np.array([1] + [0] * (num_steps))
+        w1 = 1 - w2
+
+        step_indices = torch.arange(num_steps, dtype=torch.float64).to(self.device)
+        t_steps = (sigma_max ** (1 / rho) + step_indices / (num_steps - 1) * (
+                sigma_min ** (1 / rho) - sigma_max ** (1 / rho))) ** rho
+
+        t_steps = torch.cat([torch.ones_like(t_steps[:1]) * 80.0, net.round_sigma(t_steps)])
+        t_steps = torch.cat([net.round_sigma(t_steps), torch.zeros_like(t_steps[:1])])  # t_N = 0
+    else:
+        step_indices = torch.arange(num_steps, dtype=torch.float64, device=latents.device)
+        t_steps = (sigma_max ** (1 / rho) + step_indices / (num_steps - 1) * (
+                sigma_min ** (1 / rho) - sigma_max ** (1 / rho))) ** rho
+        t_steps = torch.cat([net.round_sigma(t_steps), torch.zeros_like(t_steps[:1])])  # t_N = 0
+
+        w1 = [1] * num_steps
+        w2 = [0] * num_steps
 
     # Main sampling loop.
-    x_next = x_init + latents.to(torch.float64) * sigma_max
+    x_next = latents.to(torch.float64) * 80.0
     x0s = []
     for i, (t_cur, t_next) in enumerate(zip(t_steps[:-1], t_steps[1:])): # 0, ..., N-1
         x_cur = x_next
@@ -50,14 +64,14 @@ def edm_sampler(
         x_hat = x_cur + (t_hat ** 2 - t_cur ** 2).sqrt() * S_noise * randn_like(x_cur)
 
         # Euler step.
-        denoised = net(x_hat, t_hat, class_labels).to(torch.float64)
-        x0s.append(denoised.cpu())
+        denoised = w1[i] * net(x_hat, t_hat).to(torch.float64) + w2[i] * correction
         d_cur = (x_hat - denoised) / t_hat
         x_next = x_hat + (t_next - t_hat) * d_cur
+        x0s.append(denoised.cpu())
 
         # Apply 2nd order correction.
         if second_ord and i < num_steps - 1:
-            denoised = net(x_next, t_next, class_labels).to(torch.float64)
+            denoised = w1[i] * net(x_next, t_next).to(torch.float64) + w2[i] * correction
             d_prime = (x_next - denoised) / t_next
             x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
 
@@ -310,7 +324,7 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
                                        randn_like=rnd.randn_like, second_ord=False)
         x_init = x0_images[6].to(device)
 
-        images, x0_images = sampler_fn(net=copy_net, x_init=x_init, sigma_max=sigma_max,
+        images, x0_images = sampler_fn(net=copy_net, correction=x_init, sigma_max=sigma_max,
                                        num_steps=num_steps, second_ord=True,
                                        latents=latents2, class_labels=class_labels, randn_like=rnd.randn_like)
 
