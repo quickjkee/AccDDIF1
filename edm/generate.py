@@ -37,7 +37,7 @@ def edm_sampler(
         w2 = np.array([1] + [0] * (num_steps))
         w1 = 1 - w2
 
-        step_indices = torch.arange(num_steps, dtype=torch.float64).to(self.device)
+        step_indices = torch.arange(num_steps, dtype=torch.float64).to(latents.device)
         t_steps = (sigma_max ** (1 / rho) + step_indices / (num_steps - 1) * (
                 sigma_min ** (1 / rho) - sigma_max ** (1 / rho))) ** rho
 

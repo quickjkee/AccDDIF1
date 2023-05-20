@@ -23,7 +23,7 @@ def run(path_to_model, path_to_copy, n_steps):
                 --ref_inc=edm/inception-2015-12-05.pkl", shell=True)
             print('====================================')
 
-            for i in range(n_steps):
+            for i in range(n_steps + 1):
                 print('====================================')
                 print(f'x0_{i} FID')
                 subprocess.call(f"CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7 torchrun --standalone --nproc_per_node=7 edm/fid.py calc --images=fid-tmp/x0_{i} \
