@@ -4,10 +4,10 @@ import shutil
 
 def run(path_to_model, path_to_copy, n_steps):
 
-    steps = [37]
-    sigmas = [3.2, 3.3, 3.5, 4.0, 4.5]
-    for sigma in sigmas:
-        for n_steps in steps:
+    steps = [3, 6, 8, 10, 15, 20, 25, 30, 37]
+    sigmas = [0.13, 1.5, 1.8, 3.0, 3.0, 2.7, 3.0, 2.8, 2.8]
+    for _ in [0]:
+        for sigma, n_steps in zip(sigmas, steps):
             print(n_steps)
             print('===============================================================================================================================')
             print(f'===================GENERATION STARTED using {path_to_model}===================')
