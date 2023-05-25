@@ -18,7 +18,7 @@ import subprocess
 import torch
 import PIL.Image
 import dnnlib
-from edm.torch_utils import misc
+from torch_utils import misc
 from torch_utils import distributed as dist
 import torchvision.transforms as T
 
