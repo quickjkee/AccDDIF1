@@ -335,7 +335,7 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
         # Init samples
         #images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels,
                                        #randn_like=rnd.randn_like, second_ord=False)
-        x_init = next(dataset_iterator) #x0_images[6].to(device)
+        x_init = next(dataset_iterator)[0] #x0_images[6].to(device)
 
         images, x0_images = sampler_fn(net=copy_net, correction=x_init, sigma_max=sigma_max,
                                        num_steps=num_steps, second_ord=True,
