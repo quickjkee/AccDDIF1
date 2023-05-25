@@ -285,6 +285,8 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
     if dist.get_rank() != 0:
         torch.distributed.barrier()
 
+    dist.print0(f'Batch size"{max_batch_size}"...')
+
     # Load network.
     dist.print0(f'Loading network from "{network_pkl}"...')
     with open(network_pkl, 'rb') as handle:
@@ -336,6 +338,7 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
         #images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels,
                                        #randn_like=rnd.randn_like, second_ord=False)
         x_init = next(dataset_iterator)[0] #x0_images[6].to(device)
+        dist.print0(x_init.size())
 
         images, x0_images = sampler_fn(net=copy_net, correction=x_init, sigma_max=sigma_max,
                                        num_steps=num_steps, second_ord=True,
