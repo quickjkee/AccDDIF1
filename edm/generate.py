@@ -34,6 +34,7 @@ def edm_sampler(
     # Adjust noise levels based on what's supported by the network.
     sigma_min = sigma_min
     sigma_max = sigma_max
+    net.eval()
 
     if correction is not False:
         w2 = np.array([1] + [0] * (num_steps))
