@@ -308,7 +308,8 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
                                      cache=True)
     dataset_obj = dnnlib.util.construct_class_by_name(**dataset_kwargs) # subclass of training.dataset.Dataset
     dataset_sampler = misc.InfiniteSampler(dataset=dataset_obj, rank=dist.get_rank(), num_replicas=dist.get_world_size())
-    dataset_iterator = iter(torch.utils.data.DataLoader(dataset=dataset_obj, shuffle=False, sampler=dataset_sampler, batch_size=max_batch_size))
+    dataset_iterator = iter(torch.utils.data.DataLoader(dataset=dataset_obj, shuffle=False, sampler=dataset_sampler,
+                                                        batch_size=len(rank_batches[0])))
 
     # Loop over batches.
     dist.print0(f'Generating {len(seeds)} images to "{outdir}"...')
@@ -338,7 +339,6 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
         #images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels,
                                        #randn_like=rnd.randn_like, second_ord=False)
         x_init = next(dataset_iterator)[0] #x0_images[6].to(device)
-        dist.print0(x_init.size())
 
         images, x0_images = sampler_fn(net=copy_net, correction=x_init, sigma_max=sigma_max,
                                        num_steps=num_steps, second_ord=True,
