@@ -10,8 +10,8 @@ INPUT_PATH = os.environ['INPUT_PATH']
 def run(path_to_model, path_to_copy, n_steps):
 
     path = f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/data_cifar/out'
-    steps = [10, 15, 20, 25, 30, 40]
-    sigmas = [0.5, 0.6, 0.8, 1.0, 1.5]
+    steps = [25, 30, 40]
+    sigmas = [0.3, 0.5, 0.6, 0.8, 1.0, 1.5]
     for n_steps in steps:
         for sigma in sigmas:
             print(n_steps)
