@@ -18,6 +18,7 @@ import subprocess
 import torch
 import PIL.Image
 import dnnlib
+from edm.torch_utils import misc
 from torch_utils import distributed as dist
 import torchvision.transforms as T
 
@@ -237,6 +238,7 @@ def parse_int_list(s):
 @click.option('--network_copy', 'network_pkl_copy',  help='Network pickle filename', metavar='PATH|URL',            type=str, required=True)
 @click.option('--sigma_max', 'sigma_max',  help='Network pickle filename', metavar='PATH|URL',                      type=float, required=True)
 @click.option('--outdir',                  help='Where to save the output images', metavar='DIR',                   type=str, required=True)
+@click.option('--path', 'path',            help='Where to save the output images', metavar='DIR',                   type=str, required=False)
 @click.option('--seeds',                   help='Random seeds (e.g. 1,2,5-10)', metavar='LIST',                     type=parse_int_list, default='0-63', show_default=True)
 @click.option('--subdirs',                 help='Create subdirectory for every 1000 seeds',                         is_flag=True)
 @click.option('--class', 'class_idx',      help='Class label  [default: random]', metavar='INT',                    type=click.IntRange(min=0), default=None)
@@ -256,7 +258,7 @@ def parse_int_list(s):
 @click.option('--schedule',                help='Ablate noise schedule sigma(t)', metavar='vp|ve|linear',           type=click.Choice(['vp', 've', 'linear']))
 @click.option('--scaling',                 help='Ablate signal scaling s(t)', metavar='vp|none',                    type=click.Choice(['vp', 'none']))
 
-def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, seeds, class_idx, max_batch_size, device=torch.device('cuda'), **sampler_kwargs):
+def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, seeds, class_idx, max_batch_size, path=None, device=torch.device('cuda'), **sampler_kwargs):
     """Generate random images using the techniques described in the paper
     "Elucidating the Design Space of Diffusion-Based Generative Models".
 
@@ -296,6 +298,16 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
     if dist.get_rank() == 0:
         torch.distributed.barrier()
 
+    dist.print0('Loading dataset...')
+    dataset_kwargs = dnnlib.EasyDict(class_name='training.dataset.ImageFolderDataset',
+                                     path=path,
+                                     use_labels=False,
+                                     xflip=False,
+                                     cache=True)
+    dataset_obj = dnnlib.util.construct_class_by_name(**dataset_kwargs) # subclass of training.dataset.Dataset
+    dataset_sampler = misc.InfiniteSampler(dataset=dataset_obj, rank=dist.get_rank(), num_replicas=dist.get_world_size())
+    dataset_iterator = iter(torch.utils.data.DataLoader(dataset=dataset_obj, shuffle=False, sampler=dataset_sampler, batch_size=max_batch_size))
+
     # Loop over batches.
     dist.print0(f'Generating {len(seeds)} images to "{outdir}"...')
     for batch_seeds in tqdm.tqdm(rank_batches, unit='batch', disable=(dist.get_rank() != 0)):
@@ -321,11 +333,9 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
         sampler_fn = edm_sampler
 
         # Init samples
-        images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels,
-                                       randn_like=rnd.randn_like, second_ord=False)
-
-        #blurrer = T.GaussianBlur(kernel_size=(15, 15), sigma=(5, 5))
-        x_init = x0_images[6].to(device) #blurrer(x0_images[6]).to(device)
+        #images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels,
+                                       #randn_like=rnd.randn_like, second_ord=False)
+        x_init = next(dataset_iterator) #x0_images[6].to(device)
 
         images, x0_images = sampler_fn(net=copy_net, correction=x_init, sigma_max=sigma_max,
                                        num_steps=num_steps, second_ord=True,

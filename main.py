@@ -33,7 +33,7 @@ print(f'Loading network from "{network_pkl}"...')
 with open(network_pkl, 'rb') as handle:
     copy_net = pickle.load(handle)['ema'].to(device)
 
-with open(f'{INPUT_PATH}/AccDDIF/ultramar_exp_estimate/checkpoints_saved_ffhq/edm_5_steps_first_ord_hard.pkl', 'rb') as handle:
+with open(f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/edm_5_steps_first_ord_hard.pkl', 'rb') as handle:
     net = pickle.load(handle)['ema'].to(device)
 
 ##############################
