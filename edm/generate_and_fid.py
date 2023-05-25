@@ -11,7 +11,7 @@ def run(path_to_model, path_to_copy, n_steps):
 
     path = f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/data_cifar/out'
     steps = [25, 30, 40]
-    sigmas = [0.3, 0.5, 0.6, 0.8, 1.0, 1.5]
+    sigmas = [0.4, 0.5, 0.6, 0.7, 0.8, 1.0, 1.5]
     for n_steps in steps:
         for sigma in sigmas:
             print(n_steps)
@@ -30,7 +30,7 @@ def run(path_to_model, path_to_copy, n_steps):
                 --ref_inc=edm/inception-2015-12-05.pkl", shell=True)
             print('====================================')
 
-            for i in range(n_steps + 1):
+            for i in [n_steps - 1]:
                 print('====================================')
                 print(f'x0_{i} FID')
                 subprocess.call(f"CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --standalone --nproc_per_node=8 edm/fid.py calc --images=fid-tmp/x0_{i} \
