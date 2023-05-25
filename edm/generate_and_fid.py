@@ -30,6 +30,14 @@ def run(path_to_model, path_to_copy, n_steps):
                 --ref_inc=edm/inception-2015-12-05.pkl", shell=True)
             print('====================================')
 
+            print('===================FID INIT===================')
+            print('====================================')
+            print('Final FID')
+            subprocess.call(f"CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --standalone --nproc_per_node=8 edm/fid.py calc --images={INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/data_cifar/out \
+                --ref=$INPUT_PATH/ffhq-64x64.npz \
+                --ref_inc=edm/inception-2015-12-05.pkl", shell=True)
+            print('====================================')
+
             for i in range(n_steps + 1):
                 print('====================================')
                 print(f'x0_{i} FID')
