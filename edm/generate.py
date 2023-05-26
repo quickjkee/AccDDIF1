@@ -235,6 +235,14 @@ def parse_int_list(s):
 
 #----------------------------------------------------------------------------
 
+def prepare(rank, world_size, dataset, batch_size, pin_memory=False, num_workers=0):
+    sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=False, drop_last=False)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, pin_memory=pin_memory,
+                                             num_workers=num_workers,
+                                             drop_last=False, shuffle=False, sampler=sampler)
+
+    return dataloader
+
 @click.command()
 @click.option('--network', 'network_pkl',  help='Network pickle filename', metavar='PATH|URL',                      type=str, required=True)
 @click.option('--network_copy', 'network_pkl_copy',  help='Network pickle filename', metavar='PATH|URL',            type=str, required=True)
@@ -307,10 +315,8 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
                                      xflip=False,
                                      cache=True)
     dataset_obj = dnnlib.util.construct_class_by_name(**dataset_kwargs) # subclass of training.dataset.Dataset
-    dataset_sampler = misc.InfiniteSampler(dataset=dataset_obj, rank=dist.get_rank(), num_replicas=dist.get_world_size())
-    dataset_iterator = iter(torch.utils.data.DataLoader(dataset=dataset_obj, shuffle=False,
-                                                        sampler=DistributedSampler(dataset_obj, shuffle=False),
-                                                        batch_size=len(rank_batches[0])))
+    dataset_iterator = prepare(rank=dist.get_rank(), world_size=dist.get_world_size(),
+                               dataset=dataset_obj, batch_size=len(rank_batches[0]))
 
     # Loop over batches.
     dist.print0(f'Generating {len(seeds)} images to "{outdir}"...')
