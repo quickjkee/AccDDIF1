@@ -20,6 +20,7 @@ import PIL.Image
 import dnnlib
 from torch_utils import misc
 from torch_utils import distributed as dist
+from torch.utils.data import DistributedSampler
 import torchvision.transforms as T
 
 #----------------------------------------------------------------------------
@@ -308,6 +309,7 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
     dataset_obj = dnnlib.util.construct_class_by_name(**dataset_kwargs) # subclass of training.dataset.Dataset
     dataset_sampler = misc.InfiniteSampler(dataset=dataset_obj, rank=dist.get_rank(), num_replicas=dist.get_world_size())
     dataset_iterator = iter(torch.utils.data.DataLoader(dataset=dataset_obj, shuffle=False,
+                                                        sampler=DistributedSampler(dataset_obj, shuffle=False),
                                                         batch_size=len(rank_batches[0])))
 
     # Loop over batches.
