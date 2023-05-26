@@ -241,7 +241,7 @@ def prepare(rank, world_size, dataset, batch_size, pin_memory=False, num_workers
                                              num_workers=num_workers,
                                              drop_last=False, shuffle=False, sampler=sampler)
 
-    return dataloader
+    return iter(dataloader)
 
 @click.command()
 @click.option('--network', 'network_pkl',  help='Network pickle filename', metavar='PATH|URL',                      type=str, required=True)
