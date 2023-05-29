@@ -315,8 +315,10 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
                                      xflip=False,
                                      cache=True)
     dataset_obj = dnnlib.util.construct_class_by_name(**dataset_kwargs) # subclass of training.dataset.Dataset
-    dataset_iterator = prepare(rank=dist.get_rank(), world_size=dist.get_world_size(),
-                               dataset=dataset_obj, batch_size=len(rank_batches[0]))
+
+    # Delete comment if dataset
+    #dataset_iterator = prepare(rank=dist.get_rank(), world_size=dist.get_world_size(),
+    #                           dataset=dataset_obj, batch_size=len(rank_batches[0]))
 
     # Loop over batches.
     dist.print0(f'Generating {len(seeds)} images to "{outdir}"...')
@@ -343,10 +345,14 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
         sampler_fn = edm_sampler
 
         # Init samples
-        #images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels,
-                                       #randn_like=rnd.randn_like, second_ord=False)
-        x_init = next(dataset_iterator)[0].to(device) #x0_images[6].to(device)
-        x_init = x_init.to(torch.float32) / 127.5 - 1
+        images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels,
+                                       randn_like=rnd.randn_like, second_ord=False)
+
+        blurrer = T.GaussianBlur(kernel_size=(15, 15), sigma=(5, 5))
+        x_init = blurrer(x0_images[6].to(device))
+
+        #x_init = next(dataset_iterator)[0].to(device)
+        #x_init = x_init.to(torch.float32) / 127.5 - 1
 
         images, x0_images = sampler_fn(net=copy_net, correction=x_init, sigma_max=sigma_max,
                                        num_steps=num_steps, second_ord=True,
