@@ -28,7 +28,7 @@ print(f'Working device {device}')
 
 # Load the network
 
-network_pkl = f'{INPUT_PATH}/edm-ffhq-64x64-uncond-vp.pkl'
+network_pkl = f'{INPUT_PATH}/edm-imagenet-64x64-cond-adm.pkl'
 print(f'Loading network from "{network_pkl}"...')
 with open(network_pkl, 'rb') as handle:
     copy_net = pickle.load(handle)['ema'].to(device)

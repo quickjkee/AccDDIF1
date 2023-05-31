@@ -68,13 +68,13 @@ def edm_sampler(
         x_hat = x_cur + (t_hat ** 2 - t_cur ** 2).sqrt() * S_noise * randn_like(x_cur)
 
         # Euler step.
-        denoised = w1[i] * net(x_hat, t_hat).to(torch.float64) + w2[i] * correction
+        denoised = w1[i] * net(x_hat, t_hat, class_labels).to(torch.float64) + w2[i] * correction
         d_cur = (x_hat - denoised) / t_hat
         x_next = x_hat + (t_next - t_hat) * d_cur
 
         # Apply 2nd order correction.
         if second_ord and i < num_steps - 1:
-            denoised = w1[i] * net(x_next, t_next).to(torch.float64) + w2[i] * correction
+            denoised = w1[i] * net(x_next, t_next, class_labels).to(torch.float64) + w2[i] * correction
             d_prime = (x_next - denoised) / t_next
             x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
         x0s.append(denoised.cpu())
@@ -308,15 +308,16 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
     if dist.get_rank() == 0:
         torch.distributed.barrier()
 
-    dist.print0('Loading dataset...')
-    dataset_kwargs = dnnlib.EasyDict(class_name='training.dataset.ImageFolderDataset',
-                                     path=path,
-                                     use_labels=False,
-                                     xflip=False,
-                                     cache=True)
-    dataset_obj = dnnlib.util.construct_class_by_name(**dataset_kwargs) # subclass of training.dataset.Dataset
 
     # Delete comment if dataset
+    #dist.print0('Loading dataset...')
+    #dataset_kwargs = dnnlib.EasyDict(class_name='training.dataset.ImageFolderDataset',
+    #                                path=path,
+    #                                use_labels=False,
+    #                                xflip=False,
+    #                                cache=True)
+    #dataset_obj = dnnlib.util.construct_class_by_name(**dataset_kwargs) # subclass of training.dataset.Dataset
+
     #dataset_iterator = prepare(rank=dist.get_rank(), world_size=dist.get_world_size(),
     #                           dataset=dataset_obj, batch_size=len(rank_batches[0]))
 
@@ -345,17 +346,18 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
         sampler_fn = edm_sampler
 
         # Init samples
-        images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels,
-                                       randn_like=rnd.randn_like, second_ord=False)
+        #images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels,
+        #                               randn_like=rnd.randn_like, second_ord=False)
 
-        blurrer = T.GaussianBlur(kernel_size=(15, 15), sigma=(5, 5))
-        x_init = blurrer(x0_images[6].to(device))
+        #blurrer = T.GaussianBlur(kernel_size=(15, 15), sigma=(5, 5))
+        #x_init = blurrer(x0_images[6].to(device))
 
         #x_init = next(dataset_iterator)[0].to(device)
         #x_init = x_init.to(torch.float32) / 127.5 - 1
 
-        images, x0_images = sampler_fn(net=copy_net, correction=x_init, sigma_max=sigma_max,
+        images, x0_images = sampler_fn(net=copy_net, sigma_max=sigma_max,
                                        num_steps=num_steps, second_ord=True,
+                                       S_churn=40, S_min=0.05, S_max=50, S_noise=1.003,
                                        latents=latents2, class_labels=class_labels, randn_like=rnd.randn_like)
 
         # Save images.
