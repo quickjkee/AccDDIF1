@@ -20,7 +20,7 @@ def run(path_to_model, path_to_copy, n_steps):
             print(f'===================STEPS {n_steps}, SIGMA {sigma}===================')
             subprocess.call(f"CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --standalone --nproc_per_node=8 edm/generate.py --outdir=fid-tmp --seeds=150000-199999 --subdirs \
                 --network={path_to_model} --network_copy={path_to_copy} --sigma_max={sigma} --steps={n_steps} \
-                --path={path} --max_batch_size=1024", shell=True)
+                --path={path}", shell=True)
 
             print('===================FID CALCULATION===================')
             print('====================================')
