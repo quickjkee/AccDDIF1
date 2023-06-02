@@ -352,13 +352,13 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
         #blurrer = T.GaussianBlur(kernel_size=(15, 15), sigma=(5, 5))
         #x_init = blurrer(x0_images[6].to(device))
 
-        x_init, class_labels = next(dataset_iterator).to(device)
+        x_init, class_labels = next(dataset_iterator)
         x_init = x_init.to(torch.float32) / 127.5 - 1
 
-        images, x0_images = sampler_fn(net=copy_net, sigma_max=sigma_max, correction=x_init,
+        images, x0_images = sampler_fn(net=copy_net, sigma_max=sigma_max, correction=x_init.to(device),
                                        num_steps=num_steps, second_ord=True,
                                        S_churn=40, S_min=0.05, S_max=50, S_noise=1.003,
-                                       latents=latents2, class_labels=class_labels, randn_like=rnd.randn_like)
+                                       latents=latents2, class_labels=class_labels.to(device), randn_like=rnd.randn_like)
 
         # Save images.
         images_np = (images * 127.5 + 128).clip(0, 255).to(torch.uint8).permute(0, 2, 3, 1).cpu().numpy()
