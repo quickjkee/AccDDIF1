@@ -10,7 +10,7 @@ INPUT_PATH = os.environ['INPUT_PATH']
 def run(path_to_model, path_to_copy, n_steps):
 
     path = f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/data_cifar/imagenet_1_cons.zip'
-    steps = [32]
+    steps = [4]
     sigmas = [0.5, 1, 2]
     for n_steps in steps:
         for sigma in sigmas:
