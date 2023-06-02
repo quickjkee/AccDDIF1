@@ -310,16 +310,16 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
 
 
     # Delete comment if dataset
-    #dist.print0('Loading dataset...')
-    #dataset_kwargs = dnnlib.EasyDict(class_name='training.dataset.ImageFolderDataset',
-    #                                path=path,
-    #                                use_labels=False,
-    #                                xflip=False,
-    #                                cache=True)
-    #dataset_obj = dnnlib.util.construct_class_by_name(**dataset_kwargs) # subclass of training.dataset.Dataset
+    dist.print0('Loading dataset...')
+    dataset_kwargs = dnnlib.EasyDict(class_name='training.dataset.ImageFolderDataset',
+                                    path=path,
+                                    use_labels=True,
+                                    xflip=False,
+                                    cache=True)
+    dataset_obj = dnnlib.util.construct_class_by_name(**dataset_kwargs) # subclass of training.dataset.Dataset
 
-    #dataset_iterator = prepare(rank=dist.get_rank(), world_size=dist.get_world_size(),
-    #                           dataset=dataset_obj, batch_size=len(rank_batches[0]))
+    dataset_iterator = prepare(rank=dist.get_rank(), world_size=dist.get_world_size(),
+                               dataset=dataset_obj, batch_size=len(rank_batches[0]))
 
     # Loop over batches.
     dist.print0(f'Generating {len(seeds)} images to "{outdir}"...')
@@ -352,10 +352,10 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
         #blurrer = T.GaussianBlur(kernel_size=(15, 15), sigma=(5, 5))
         #x_init = blurrer(x0_images[6].to(device))
 
-        #x_init = next(dataset_iterator)[0].to(device)
-        #x_init = x_init.to(torch.float32) / 127.5 - 1
+        x_init, class_labels = next(dataset_iterator)[0].to(device)
+        x_init = x_init.to(torch.float32) / 127.5 - 1
 
-        images, x0_images = sampler_fn(net=copy_net, sigma_max=sigma_max,
+        images, x0_images = sampler_fn(net=copy_net, sigma_max=sigma_max, correction=x_init,
                                        num_steps=num_steps, second_ord=True,
                                        S_churn=40, S_min=0.05, S_max=50, S_noise=1.003,
                                        latents=latents2, class_labels=class_labels, randn_like=rnd.randn_like)
