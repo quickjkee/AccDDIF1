@@ -352,7 +352,7 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
         #blurrer = T.GaussianBlur(kernel_size=(15, 15), sigma=(5, 5))
         #x_init = blurrer(x0_images[6].to(device))
 
-        x_init, class_labels = next(dataset_iterator)[0].to(device)
+        x_init, class_labels = next(dataset_iterator).to(device)
         x_init = x_init.to(torch.float32) / 127.5 - 1
 
         images, x0_images = sampler_fn(net=copy_net, sigma_max=sigma_max, correction=x_init,
