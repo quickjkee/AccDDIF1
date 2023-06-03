@@ -236,10 +236,10 @@ def parse_int_list(s):
 #----------------------------------------------------------------------------
 
 def prepare(rank, world_size, dataset, batch_size, pin_memory=False, num_workers=0):
-    sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=False, drop_last=False)
+    sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=True, drop_last=False)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, pin_memory=pin_memory,
                                              num_workers=num_workers,
-                                             drop_last=False, shuffle=False, sampler=sampler)
+                                             drop_last=False, shuffle=True, sampler=sampler)
 
     return iter(dataloader)
 
