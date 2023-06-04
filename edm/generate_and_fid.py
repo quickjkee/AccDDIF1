@@ -9,9 +9,9 @@ INPUT_PATH = os.environ['INPUT_PATH']
 
 def run(path_to_model, path_to_copy, n_steps):
 
-    path = f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/data_cifar/imagenet_2_cons.zip'
-    steps = [128]
-    sigmas = [5.6, 5.8, 6.0, 6.3, 6.5, 6.8, 7.0, 7.5, 7.8, 8.0]
+    path = f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/data_cifar/imagenet_4_cd.zip'
+    steps = [16]
+    sigmas = [2.0, 3.0, 4.0, 5.0, 5.6, 5.8, 6.0, 6.3, 6.5, 6.8, 7.0, 7.5, 7.8, 8.0]
     for n_steps in steps:
         for sigma in sigmas:
             print(n_steps)
