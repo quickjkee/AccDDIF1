@@ -346,19 +346,19 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
         sampler_fn = edm_sampler
 
         # Init samples
-        #images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels,
-        #                               randn_like=rnd.randn_like, second_ord=False)
+        images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents, class_labels=class_labels,
+                                       randn_like=rnd.randn_like, second_ord=False)
 
         #blurrer = T.GaussianBlur(kernel_size=(15, 15), sigma=(5, 5))
-        #x_init = blurrer(x0_images[6].to(device))
+        #x_init = x0_images[6].to(device)
 
-        x_init, class_labels = next(dataset_iterator)
-        x_init = x_init.to(torch.float32).to(device) / 127.5 - 1
+        #x_init, class_labels = next(dataset_iterator)
+        #x_init = x_init.to(torch.float32).to(device) / 127.5 - 1
 
-        images, x0_images = sampler_fn(net=copy_net, sigma_max=sigma_max, correction=x_init,
-                                       num_steps=num_steps, second_ord=True,
-                                       S_churn=40, S_min=0.05, S_max=50, S_noise=1.003,
-                                       latents=latents, class_labels=class_labels.to(device), randn_like=rnd.randn_like)
+        #images, x0_images = sampler_fn(net=copy_net, sigma_max=sigma_max, correction=x_init,
+        #                               num_steps=num_steps, second_ord=True,
+        #                               S_churn=40, S_min=0.05, S_max=50, S_noise=1.003,
+        #                               latents=latents, class_labels=class_labels.to(device), randn_like=rnd.randn_like)
 
         # Save images.
         images_np = (images * 127.5 + 128).clip(0, 255).to(torch.uint8).permute(0, 2, 3, 1).cpu().numpy()
