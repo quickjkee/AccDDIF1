@@ -395,8 +395,14 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
         dist.all_gather(gathered_samples, images)
         all_images.extend([sample.cpu().numpy() for sample in gathered_samples])
 
+        labels = torch.argmax(class_labels, dim=1)
+        gathered_labels = [torch.zeros_like(labels) for _ in range(dist.get_world_size())]
+        dist.all_gather(gathered_labels, labels)
+        all_labels.extend([labels.cpu().numpy() for labels in gathered_labels])
+
     arr = np.concatenate(all_images, axis=0)
-    np.savez(f'{outdir}/array', arr)
+    label_arr = np.concatenate(all_labels, axis=0)
+    np.savez(f'{outdir}/array', arr, label_arr)
 
     # Done.
     torch.distributed.barrier()
