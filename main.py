@@ -7,6 +7,7 @@ INPUT_PATH = os.environ['INPUT_PATH']
 sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/ClipModel')
 sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/ClipModel/clip')
 sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/edm')
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/guided-diffusion')
 sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff')
 print(sys.path)
 

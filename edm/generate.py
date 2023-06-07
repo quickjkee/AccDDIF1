@@ -394,7 +394,7 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
         all_images.extend([sample.cpu().numpy() for sample in gathered_samples])
 
     arr = np.concatenate(all_images, axis=0)
-    np.savez('mnepohui', arr)
+    np.savez(f'{outdir}/array', arr)
 
     # Done.
     torch.distributed.barrier()
