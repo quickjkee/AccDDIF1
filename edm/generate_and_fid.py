@@ -2,9 +2,6 @@ import subprocess
 import shutil
 import sys
 import os
-import tensorflow
-import requests
-import scipy
 
 SOURCE_CODE_PATH = os.environ['SOURCE_CODE_PATH']
 INPUT_PATH = os.environ['INPUT_PATH']
