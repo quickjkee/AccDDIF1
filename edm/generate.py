@@ -322,6 +322,9 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
                                dataset=dataset_obj, batch_size=len(rank_batches[0]))
     dist.print0(f'Batch size {len(rank_batches[0])}')
 
+    all_images = []
+    all_labels = []
+
     # Loop over batches.
     dist.print0(f'Generating {len(seeds)} images to "{outdir}"...')
     for batch_seeds in tqdm.tqdm(rank_batches, unit='batch', disable=(dist.get_rank() != 0)):
@@ -361,7 +364,8 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
                                        latents=latents, class_labels=class_labels.to(device), randn_like=rnd.randn_like)
 
         # Save images.
-        images_np = (images * 127.5 + 128).clip(0, 255).to(torch.uint8).permute(0, 2, 3, 1).cpu().numpy()
+        images = (images * 127.5 + 128).clip(0, 255).to(torch.uint8).permute(0, 2, 3, 1)
+        images_np = images.cpu().numpy()
         for seed, image_np in zip(batch_seeds, images_np):
             image_dir = os.path.join(outdir, f'{seed-seed%1000:06d}') if subdirs else outdir
             image_dir = os.path.join(image_dir, 'final')
@@ -384,6 +388,13 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
                     PIL.Image.fromarray(image_np[:, :, 0], 'L').save(image_path)
                 else:
                     PIL.Image.fromarray(image_np, 'RGB').save(image_path)
+
+        gathered_samples = [torch.zeros_like(images) for _ in range(dist.get_world_size())]
+        dist.all_gather(gathered_samples, images)
+        all_images.extend([sample.cpu().numpy() for sample in gathered_samples])
+
+    arr = np.concatenate(all_images, axis=0)
+    np.savez('mnepohui', arr)
 
     # Done.
     torch.distributed.barrier()

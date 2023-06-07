@@ -37,6 +37,13 @@ def get_rank():
 
 #----------------------------------------------------------------------------
 
+#----------------------------------------------------------------------------
+
+def all_gather(gathered_samples, sample):
+    return torch.distributed.all_gather(gathered_samples, sample)
+
+#----------------------------------------------------------------------------
+
 def get_world_size():
     return torch.distributed.get_world_size() if torch.distributed.is_initialized() else 1
 
