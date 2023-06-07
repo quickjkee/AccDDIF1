@@ -38,7 +38,7 @@ def run(path_to_model, path_to_copy, n_steps):
                     --ref_inc=edm/inception-2015-12-05.pkl", shell=True)
                 print('====================================')
                 print(f'guided FID')
-                subprocess.call(f"CUDA_VISIBLE_DEVICES=5 python3 guided-diffusion/evaluator.py $INPUT_PATH/VIRTUAL_imagenet64_labeled.npz fid-tmp/array.npz", shell=True)
+                subprocess.call(f"CUDA_VISIBLE_DEVICES=5 python3 guided-diffusion/evaluations/evaluator.py $INPUT_PATH/VIRTUAL_imagenet64_labeled.npz fid-tmp/array.npz", shell=True)
                 print('====================================')
             print(
                 '===============================================================================================================================')
