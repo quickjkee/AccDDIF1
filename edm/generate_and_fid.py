@@ -10,9 +10,7 @@ INPUT_PATH = os.environ['INPUT_PATH']
 def run(path_to_model, path_to_copy, n_steps):
 
     path = f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/data_cifar/imagenet_4_cd.zip'
-    subprocess.call(
-        f"CUDA_VISIBLE_DEVICES=5 python3 guided-diffusion-main/evaluations/evaluator.py $INPUT_PATH/VIRTUAL_imagenet64_labeled.npz $INPUT_PATH/VIRTUAL_imagenet64_labeled.npz",
-        shell=True)
+
     steps = [3]
     sigmas = [5.3]
     for n_steps in steps:
