@@ -391,7 +391,7 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
                     PIL.Image.fromarray(image_np, 'RGB').save(image_path)
 
         #images = x0_images[0].to(device)
-        images = (images * 127.5 + 128).clip(0, 255).to(torch.uint8).permute(0, 2, 3, 1)
+        #images = (images * 127.5 + 128).clip(0, 255).to(torch.uint8).permute(0, 2, 3, 1)
         gathered_samples = [torch.zeros_like(images) for _ in range(dist.get_world_size())]
         dist.all_gather(gathered_samples, images)
         all_images.extend([sample.cpu().numpy() for sample in gathered_samples])
