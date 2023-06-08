@@ -392,18 +392,18 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
 
         #images = x0_images[0].to(device)
         #images = (images * 127.5 + 128).clip(0, 255).to(torch.uint8).permute(0, 2, 3, 1)
-        gathered_samples = [torch.zeros_like(images) for _ in range(dist.get_world_size())]
-        dist.all_gather(gathered_samples, images)
-        all_images.extend([sample.cpu().numpy() for sample in gathered_samples])
+        #gathered_samples = [torch.zeros_like(images) for _ in range(dist.get_world_size())]
+        #dist.all_gather(gathered_samples, images)
+        #all_images.extend([sample.cpu().numpy() for sample in gathered_samples])
 
-        labels = torch.argmax(class_labels, dim=1)
-        gathered_labels = [torch.zeros_like(labels) for _ in range(dist.get_world_size())]
-        dist.all_gather(gathered_labels, labels)
-        all_labels.extend([labels.cpu().numpy() for labels in gathered_labels])
+        #labels = torch.argmax(class_labels, dim=1)
+        #gathered_labels = [torch.zeros_like(labels) for _ in range(dist.get_world_size())]
+        #dist.all_gather(gathered_labels, labels)
+        #all_labels.extend([labels.cpu().numpy() for labels in gathered_labels])
 
-    arr = np.concatenate(all_images, axis=0)
-    label_arr = np.concatenate(all_labels, axis=0)
-    np.savez(f'{outdir}/array', arr, label_arr)
+    #arr = np.concatenate(all_images, axis=0)
+    #label_arr = np.concatenate(all_labels, axis=0)
+    #np.savez(f'{outdir}/array', arr, label_arr)
 
     # Done.
     torch.distributed.barrier()
