@@ -11,8 +11,8 @@ sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/ClipModel/clip')
 sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/edm')
 sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/guided-diffusion-main')
 sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff')
-sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/consistency_models-main')
-sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/consistency_models-main/cm')
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/consistency_models_main')
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/consistency_models_main/cm')
 print(sys.path)
 
 
