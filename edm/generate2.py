@@ -23,7 +23,7 @@ from torch_utils import distributed as dist
 from torch.utils.data import DistributedSampler
 import torchvision.transforms as T
 
-from cm.script_util import (
+from consistency_models_main.cm.script_util import (
     NUM_CLASSES,
     model_and_diffusion_defaults,
     create_model_and_diffusion,

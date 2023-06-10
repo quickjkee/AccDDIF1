@@ -78,7 +78,7 @@ def run2(edm_path, cons_path, n_steps):
             print('====================================')
             print('Final FID')
             subprocess.call(f"CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python3 guided-diffusion-main/evaluations/evaluator.py \
-                            $INPUT_PATH/VIRTUAL_imagenet64_labeled.npz fid-tmp/array.npz", shell=True)
+                            {path_to_ref} fid-tmp/array.npz", shell=True)
             print('====================================')
 
             for _ in [n_steps - 1]:
