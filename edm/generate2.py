@@ -8,6 +8,20 @@
 """Generate random images using the techniques described in the paper
 "Elucidating the Design Space of Diffusion-Based Generative Models"."""
 
+import sys
+import os
+
+SOURCE_CODE_PATH = os.environ['SOURCE_CODE_PATH']
+INPUT_PATH = os.environ['INPUT_PATH']
+
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/ClipModel')
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/ClipModel/clip')
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/edm')
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/guided-diffusion-main')
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff')
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/consistency_models_main/')
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/consistency_models_main/cm/')
+
 import os
 import re
 import click
