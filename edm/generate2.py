@@ -203,7 +203,7 @@ def prepare(rank, world_size, dataset, batch_size, pin_memory=False, num_workers
 @click.option('--schedule',                help='Ablate noise schedule sigma(t)', metavar='vp|ve|linear',           type=click.Choice(['vp', 've', 'linear']))
 @click.option('--scaling',                 help='Ablate signal scaling s(t)', metavar='vp|none',                    type=click.Choice(['vp', 'none']))
 
-def main(edm_path, cons_path, num_steps, sigma_max, outdir, subdirs, ts, seeds, class_idx, max_batch_size, path=None, device=torch.device('cuda'), **sampler_kwargs):
+def main(edm_path, cons_path, num_steps, sigma_max, outdir, subdirs, seeds, class_idx, max_batch_size, path=None, device=torch.device('cuda'), **sampler_kwargs):
     os.makedirs(outdir, exist_ok=True)
 
     dist.init()
