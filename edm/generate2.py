@@ -190,6 +190,8 @@ def prepare(rank, world_size, dataset, batch_size, pin_memory=False, num_workers
 @click.option('--scaling',                 help='Ablate signal scaling s(t)', metavar='vp|none',                    type=click.Choice(['vp', 'none']))
 
 def main(edm_path, cons_path, num_steps, sigma_max, outdir, subdirs, ts, seeds, class_idx, max_batch_size, path=None, device=torch.device('cuda'), **sampler_kwargs):
+    os.makedirs(outdir, exist_ok=True)
+
     dist.init()
     num_batches = ((len(seeds) - 1) // (max_batch_size * dist.get_world_size()) + 1) * dist.get_world_size()
     all_batches = torch.as_tensor(seeds).tensor_split(num_batches)
