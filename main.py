@@ -7,8 +7,10 @@ INPUT_PATH = os.environ['INPUT_PATH']
 sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/ClipModel')
 sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/ClipModel/clip')
 sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/edm')
-sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/guided-diffusion')
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/guided-diffusion-main')
 sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff')
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/consistency_models-main')
+sys.path.append(f'{SOURCE_CODE_PATH}/EffDiff/consistency_models-main/cm')
 print(sys.path)
 
 import torch
