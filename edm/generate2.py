@@ -247,7 +247,7 @@ def main(edm_path, cons_path, num_steps, sigma_max, outdir, subdirs, seeds, clas
 
     # EDM
     edm_net, edm_diff = create_model_and_diffusion(
-        attention_resolutions=[32, 16, 8],
+        attention_resolutions="32, 16, 8",
         class_cond=False,
         use_scale_shift_norm=False,
         dropout=0.0,
