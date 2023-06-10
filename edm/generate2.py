@@ -220,11 +220,6 @@ def main(edm_path, cons_path, num_steps, sigma_max, outdir, subdirs, seeds, clas
 
     # Consistency distillation
     cons_net, cons_diff = create_model_and_diffusion(
-        training_mode='consistency_distillation',
-        sampler='multistep',
-        ts=[0, 62, 150],
-        steps=151,
-        model_path=cons_path,
         attention_resolutions=[32, 16, 8],
         class_cond=False,
         use_scale_shift_norm=False,
@@ -232,7 +227,6 @@ def main(edm_path, cons_path, num_steps, sigma_max, outdir, subdirs, seeds, clas
         image_size=256,
         num_channels=3,
         num_res_blocks=2,
-        num_samples=500,
         num_head_channels=64,
         resblock_updown=True,
         use_fp16=True,
@@ -247,11 +241,6 @@ def main(edm_path, cons_path, num_steps, sigma_max, outdir, subdirs, seeds, clas
 
     # EDM
     edm_net, edm_diff = create_model_and_diffusion(
-        training_mode='edm',
-        sampler='heun',
-        ts='',
-        steps=num_steps,
-        model_path=edm_path,
         attention_resolutions=[32, 16, 8],
         class_cond=False,
         use_scale_shift_norm=False,
@@ -259,7 +248,6 @@ def main(edm_path, cons_path, num_steps, sigma_max, outdir, subdirs, seeds, clas
         image_size=256,
         num_channels=3,
         num_res_blocks=2,
-        num_samples=500,
         num_head_channels=64,
         resblock_updown=True,
         use_fp16=True,
