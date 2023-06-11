@@ -298,14 +298,14 @@ def main(edm_path, cons_path, num_steps, sigma_max, outdir, subdirs, seeds, clas
         sampler_kwargs = {key: value for key, value in sampler_kwargs.items() if value is not None}
 
         images_distill = stochastic_iterative_sampler(diffusion=cons_diff, model=cons_net, x=latents * 80.0,
-                                                      sigma_max=80.0, steps=151, ts=[0, 62, 150], generator=rnd)
+                                                      t_max=80.0, steps=151, ts=[0, 62, 150], generator=rnd)
 
         latents = rnd.randn([batch_size, 3, 256, 256], device=device)
-        images, x0_images = edm_sampler(diffusion=edm_diff, model=edm_net,
-                                        sigma_max=sigma_max, correction=images_distill,
-                                        num_steps=num_steps, second_ord=True,
+        #images, x0_images = edm_sampler(diffusion=edm_diff, model=edm_net,
+        #                                sigma_max=sigma_max, correction=images_distill,
+        #                                num_steps=num_steps, second_ord=True,
                                        #S_churn=40, S_min=0.05, S_max=50, S_noise=1.003,
-                                        latents=latents, randn_like=rnd.randn_like)
+        #                                latents=latents, randn_like=rnd.randn_like)
 
         # Save images.
         images = (images_distill * 127.5 + 128).clip(0, 255).to(torch.uint8).permute(0, 2, 3, 1)
@@ -314,8 +314,8 @@ def main(edm_path, cons_path, num_steps, sigma_max, outdir, subdirs, seeds, clas
         all_images.extend([sample.cpu().numpy() for sample in gathered_samples])
 
         # Save estimates
-        for i, x0 in enumerate(x0_images):
-            continue
+        #for i, x0 in enumerate(x0_images):
+        #    continue
         ##########################################################################
 
     # Saving.
