@@ -20,7 +20,7 @@ def run(path_to_model, path_to_copy, n_steps):
 
     path = f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/data_cifar/imagenet_2_cons.zip'
 
-    steps = [226]
+    steps = [256]
     sigmas = [5.5, 7.0, 8.0, 9.0, 8.5]
     for n_steps in steps:
         for sigma in sigmas:
