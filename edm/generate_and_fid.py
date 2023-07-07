@@ -98,6 +98,6 @@ def run2(edm_path, cons_path, n_steps):
 
 run(path_to_copy=f'https://nvlabs-fi-cdn.nvidia.com/edm/pretrained/edm-ffhq-64x64-uncond-vp.pkl',
     n_steps=100500,
-    path_to_model=f'{INPUT_PATH}/edm-ffhq-64x64-uncond-vp.pkl')
+    path_to_model=f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/edm_5_steps_first_ord_hard.pkl')
 
 
