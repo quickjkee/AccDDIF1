@@ -96,8 +96,8 @@ def run2(edm_path, cons_path, n_steps):
 #     cons_path=f'{INPUT_PATH}/cd_imagenet64_lpips.pt',
 #     n_steps=0)
 
-run(path_to_model=f'https://nvlabs-fi-cdn.nvidia.com/edm/pretrained/edm-ffhq-64x64-uncond-vp.pkl',
+run(path_to_copy=f'https://nvlabs-fi-cdn.nvidia.com/edm/pretrained/edm-ffhq-64x64-uncond-vp.pkl',
     n_steps=100500,
-    path_to_copy=f'{INPUT_PATH}/edm-ffhq-64x64-uncond-vp.pkl')
+    path_to_model=f'{INPUT_PATH}/edm-ffhq-64x64-uncond-vp.pkl')
 
 

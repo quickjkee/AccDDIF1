@@ -301,8 +301,8 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
         net = pickle.load(handle)['ema'].to(device)
 
     dist.print0(f'Loading copy network from "{network_pkl_copy}"...')
-    with open(network_pkl_copy, 'rb') as handle:
-        copy_net = pickle.load(handle)['ema'].to(device)
+    with dnnlib.util.open_url(network_pkl_copy) as f:
+        copy_net = pickle.load(f)['ema'].to(device)
 
     # Other ranks follow.
     if dist.get_rank() == 0:
