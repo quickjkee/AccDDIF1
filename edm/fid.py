@@ -140,17 +140,17 @@ def calc(image_path, ref_path, num_expected, seed, batch, ref_path_inc):
         print(f'{fid:g}')
 
         # Update previous values
-        with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'rb') as handle:
-            fid_stats = pickle.load(handle)
+        #with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'rb') as handle:
+        #    fid_stats = pickle.load(handle)
 
-            try:
-                fid_stats[image_path].append(fid)
-            except KeyError:
-                fid_stats[image_path] = []
-                fid_stats[image_path].append(fid)
+        #    try:
+        #        fid_stats[image_path].append(fid)
+        #    except KeyError:
+        #        fid_stats[image_path] = []
+        #        fid_stats[image_path].append(fid)
 
-        with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'wb') as handle:
-            pickle.dump(fid_stats, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        #with open(f'{OUTPUT_PATH}/fid_stats.pickle', 'wb') as handle:
+        #    pickle.dump(fid_stats, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     #if dist.get_rank() == 0:
     #    subprocess.call('nvidia-smi')
