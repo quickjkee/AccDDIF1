@@ -361,8 +361,8 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
 
         images, x0_images = sampler_fn(net=copy_net, sigma_max=sigma_max, correction=x_init,
                                        num_steps=num_steps, second_ord=True,
-                                       #S_churn=40, S_min=0.05, S_max=50, S_noise=1.003,
-                                       latents=latents1, randn_like=rnd.randn_like)
+                                       S_churn=40, S_min=0.05, S_max=50, S_noise=1.003,
+                                       latents=latents2, randn_like=rnd.randn_like)
 
         # Save images.
         images = (images * 127.5 + 128).clip(0, 255).to(torch.uint8).permute(0, 2, 3, 1)
