@@ -36,7 +36,7 @@ def run(path_to_model, path_to_copy, n_steps):
             print('====================================')
             print('Final FID')
             subprocess.call(f"CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --standalone --nproc_per_node=8 edm/fid.py calc --images=fid-tmp/final \
-                --ref=$INPUT_PATH/imagenet-64x64.npz \
+                --ref=https://nvlabs-fi-cdn.nvidia.com/edm/fid-refs/ffhq-64x64.npz \
                 --ref_inc=edm/inception-2015-12-05.pkl", shell=True)
             print('====================================')
 
@@ -96,7 +96,7 @@ def run2(edm_path, cons_path, n_steps):
 #     cons_path=f'{INPUT_PATH}/cd_imagenet64_lpips.pt',
 #     n_steps=0)
 
-run(path_to_model=f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/edm_5_steps_first_ord_hard.pkl',
+run(path_to_model=f'https://nvlabs-fi-cdn.nvidia.com/edm/pretrained/edm-ffhq-64x64-uncond-vp.pkl',
     n_steps=100500,
     path_to_copy=f'{INPUT_PATH}/edm-ffhq-64x64-uncond-vp.pkl')
 
