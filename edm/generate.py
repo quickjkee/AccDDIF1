@@ -310,20 +310,20 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
 
 
     # Delete comment if dataset
-    dist.print0('Loading dataset...')
-    dataset_kwargs = dnnlib.EasyDict(class_name='training.dataset.ImageFolderDataset',
-                                    path=path,
-                                    use_labels=True,
-                                    xflip=False,
-                                    cache=True)
-    dataset_obj = dnnlib.util.construct_class_by_name(**dataset_kwargs) # subclass of training.dataset.Dataset
+    #dist.print0('Loading dataset...')
+    #dataset_kwargs = dnnlib.EasyDict(class_name='training.dataset.ImageFolderDataset',
+    #                                path=path,
+    #                                use_labels=True,
+    #                                xflip=False,
+    #                                cache=True)
+    #dataset_obj = dnnlib.util.construct_class_by_name(**dataset_kwargs) # subclass of training.dataset.Dataset
 
-    dataset_iterator = prepare(rank=dist.get_rank(), world_size=dist.get_world_size(),
-                               dataset=dataset_obj, batch_size=len(rank_batches[0]))
-    dist.print0(f'Batch size {len(rank_batches[0])}')
+    #dataset_iterator = prepare(rank=dist.get_rank(), world_size=dist.get_world_size(),
+    #                           dataset=dataset_obj, batch_size=len(rank_batches[0]))
+    #dist.print0(f'Batch size {len(rank_batches[0])}')
 
-    all_images = []
-    all_labels = []
+    #all_images = []
+    #all_labels = []
 
     # Loop over batches.
     dist.print0(f'Generating {len(seeds)} images to "{outdir}"...')
@@ -335,7 +335,8 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
 
         # Pick latents and labels.
         rnd = StackedRandomGenerator(device, batch_seeds)
-        latents = rnd.randn([batch_size, net.img_channels, net.img_resolution, net.img_resolution], device=device)
+        latents1 = rnd.randn([batch_size, net.img_channels, net.img_resolution, net.img_resolution], device=device)
+        latents2 = rnd.randn([batch_size, net.img_channels, net.img_resolution, net.img_resolution], device=device)
         class_labels = None
         if copy_net.label_dim:
             class_labels = torch.eye(copy_net.label_dim, device=device)[rnd.randint(copy_net.label_dim, size=[batch_size], device=device)]
@@ -349,20 +350,19 @@ def main(network_pkl, network_pkl_copy, num_steps, sigma_max, outdir, subdirs, s
         sampler_fn = edm_sampler
 
         # Init samples
-        #images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels,
-        #                               randn_like=rnd.randn_like, second_ord=False)
+        images, x0_images = sampler_fn(net=net, num_steps=10, latents=latents1, class_labels=class_labels,
+                                       randn_like=rnd.randn_like, second_ord=False)
 
-        #blurrer = T.GaussianBlur(kernel_size=(15, 15), sigma=(5, 5))
-        #x_init = blurrer(x0_images[6].to(device))
+        x_init = x0_images[6].to(device)
 
-        x_init, class_labels = next(dataset_iterator)
-        x_init = x_init.to(torch.float32).to(device) / 127.5 - 1
-        class_labels = class_labels.to(device)
+        #x_init, class_labels = next(dataset_iterator)
+        #x_init = x_init.to(torch.float32).to(device) / 127.5 - 1
+        #class_labels = class_labels.to(device)
 
         images, x0_images = sampler_fn(net=copy_net, sigma_max=sigma_max, correction=x_init,
                                        num_steps=num_steps, second_ord=True,
-                                       S_churn=40, S_min=0.05, S_max=50, S_noise=1.003,
-                                       latents=latents, class_labels=class_labels, randn_like=rnd.randn_like)
+                                       #S_churn=40, S_min=0.05, S_max=50, S_noise=1.003,
+                                       latents=latents2, randn_like=rnd.randn_like)
 
         # Save images.
         images = (images * 127.5 + 128).clip(0, 255).to(torch.uint8).permute(0, 2, 3, 1)
