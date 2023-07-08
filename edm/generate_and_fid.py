@@ -62,7 +62,7 @@ def run2(edm_path, cons_path, n_steps):
     path_to_ref = f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/data_cifar/VIRTUAL_lsun_cat256.npz'
 
     steps = [37]
-    sigmas = [2.8, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.9, 3.0, 3.1, 3.2, 3.3, 4.0, 5.0, 6.0, 7.0]
+    sigmas = [2.8]
     for n_steps in steps:
         for sigma in sigmas:
             print(n_steps)
@@ -92,12 +92,12 @@ def run2(edm_path, cons_path, n_steps):
                 '===============================================================================================================================')
             shutil.rmtree('fid-tmp')
 
-#run2(edm_path=f'{INPUT_PATH}/edm_cat256_ema.pt',
-#     cons_path=f'{INPUT_PATH}/cd_imagenet64_lpips.pt',
-#     n_steps=0)
+run2(edm_path=f'{INPUT_PATH}/edm_cat256_ema.pt',
+     cons_path=f'{INPUT_PATH}/cd_imagenet64_lpips.pt',
+     n_steps=0)
 
-run(path_to_copy=f'https://nvlabs-fi-cdn.nvidia.com/edm/pretrained/edm-ffhq-64x64-uncond-vp.pkl',
-    n_steps=100500,
-    path_to_model=f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/edm_5_steps_first_ord_hard.pkl')
+#run(path_to_copy=f'https://nvlabs-fi-cdn.nvidia.com/edm/pretrained/edm-ffhq-64x64-uncond-vp.pkl',
+#    n_steps=100500,
+#    path_to_model=f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/edm_5_steps_first_ord_hard.pkl')
 
 
