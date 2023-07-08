@@ -125,7 +125,7 @@ def edm_sampler(
         # Apply 2nd order correction.
         if second_ord and i < num_steps - 1:
             t_next = ones * t_next
-            _, denoised = diffusion.denoise(model, x_next, t_next)  # net(x_next, t_next).to(torch.float64)
+            _, denoised = diffusion.denoise(model, x_next, t_next)
             denoised = w1[i] * denoised + w2[i] * correction
             d_prime = (x_next - denoised) / t_next
             x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
@@ -235,7 +235,7 @@ def main(edm_path, cons_path, num_steps, sigma_max, outdir, subdirs, seeds, clas
         num_heads_upsample=1,
         use_checkpoint=False,
         use_new_attention_order=False,
-        use_fp16=True,
+        use_fp16=False,
         weight_schedule='uniform',
         distillation=True,
     )
@@ -262,7 +262,7 @@ def main(edm_path, cons_path, num_steps, sigma_max, outdir, subdirs, seeds, clas
         num_heads_upsample=1,
         use_checkpoint=False,
         use_new_attention_order=False,
-        use_fp16=True,
+        use_fp16=False,
         weight_schedule='karras',
         distillation=False,
     )
