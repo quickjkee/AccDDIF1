@@ -75,6 +75,7 @@ def stochastic_iterative_sampler(
 #----------------------------------------------------------------------------
 # Proposed EDM sampler (Algorithm 2).
 
+@torch.no_grad()
 def edm_sampler(
     diffusion, model, latents, class_labels=None, randn_like=torch.randn_like,
     x_init=0.0, num_steps=18, sigma_min=0.002, sigma_max=80, rho=7,
