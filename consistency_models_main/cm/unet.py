@@ -432,7 +432,7 @@ class QKVAttentionLegacy(nn.Module):
         )  # More stable with f16 than dividing afterwards
         weight = th.softmax(weight, dim=-1).type(weight.dtype)
         a = th.einsum("bts,bcs->bct", weight, v)
-        a = a.float()
+        #a = a.float()
         return a.reshape(bs, -1, length)
 
     @staticmethod

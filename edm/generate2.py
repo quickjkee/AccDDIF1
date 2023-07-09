@@ -235,7 +235,7 @@ def main(edm_path, cons_path, num_steps, sigma_max, outdir, subdirs, seeds, clas
         num_heads_upsample=1,
         use_checkpoint=False,
         use_new_attention_order=False,
-        use_fp16=False,
+        use_fp16=True,
         weight_schedule='uniform',
         distillation=True,
     )
@@ -262,7 +262,7 @@ def main(edm_path, cons_path, num_steps, sigma_max, outdir, subdirs, seeds, clas
         num_heads_upsample=1,
         use_checkpoint=False,
         use_new_attention_order=False,
-        use_fp16=False,
+        use_fp16=True,
         weight_schedule='karras',
         distillation=False,
     )
