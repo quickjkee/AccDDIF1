@@ -127,7 +127,6 @@ def edm_sampler(
         if second_ord and i < num_steps - 1:
             _, denoised = diffusion.denoise(model, x_next, ones * t_next)
             denoised = w1[i] * denoised + w2[i] * correction
-            dist.print0(f'SIZE {x_next.size(), denoised.size(), t_next.size()}')
             d_prime = (x_next - denoised) / t_next
             x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
         x0s.append(denoised.cpu())
