@@ -94,7 +94,7 @@ def edm_sampler(
         t_steps = (sigma_max ** (1 / rho) + step_indices / (num_steps - 1) * (
                 sigma_min ** (1 / rho) - sigma_max ** (1 / rho))) ** rho
 
-        t_steps = torch.cat([torch.ones_like(t_steps[:1]) * 80.0, net.round_sigma(t_steps)])
+        t_steps = torch.cat([torch.ones_like(t_steps[:1]) * 80.0, t_steps])
         t_steps = torch.cat([t_steps, torch.zeros_like(t_steps[:1])])  # t_N = 0
     else:
         step_indices = torch.arange(num_steps, dtype=torch.float64, device=latents.device)
@@ -125,9 +125,9 @@ def edm_sampler(
 
         # Apply 2nd order correction.
         if second_ord and i < num_steps - 1:
-            t_next = ones * t_next
-            _, denoised = diffusion.denoise(model, x_next, t_next)
+            _, denoised = diffusion.denoise(model, x_next, ones * t_next)
             denoised = w1[i] * denoised + w2[i] * correction
+            dist.print0(f'SIZE {x_next.size(), denoised.size(), t_next.size()}')
             d_prime = (x_next - denoised) / t_next
             x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
         x0s.append(denoised.cpu())
