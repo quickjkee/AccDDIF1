@@ -62,7 +62,7 @@ def run2(edm_path, cons_path, n_steps):
     path_to_ref = f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/data_cifar/VIRTUAL_lsun_cat256.npz'
 
     steps = [40]
-    sigmas = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 3.5]
+    sigmas = [5.0, 6.0, 7.0, 8.0, 9.0, 10, 11, 12, 13, 14, 15]
     for n_steps in steps:
         for sigma in sigmas:
             print(n_steps)
@@ -77,16 +77,16 @@ def run2(edm_path, cons_path, n_steps):
             print('===================FID CALCULATION===================')
             print('====================================')
             print('Final FID')
-            subprocess.call(f"CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python3 guided-diffusion-main/evaluations/evaluator.py \
+            subprocess.call(f"CUDA_VISIBLE_DEVICES=7 python3 guided-diffusion-main/evaluations/evaluator.py \
                             {path_to_ref} fid-tmp/array.npz", shell=True)
             print('====================================')
 
-            for _ in [n_steps - 1]:
-                print('====================================')
-                print(f'guided FID')
-                subprocess.call(f"CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python3 guided-diffusion-main/evaluations/evaluator.py \
-                                {path_to_ref} fid-tmp/array.npz", shell=True)
-                print('====================================')
+            #for _ in [n_steps - 1]:
+            #    print('====================================')
+            #    print(f'guided FID')
+            #    subprocess.call(f"CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python3 guided-diffusion-main/evaluations/evaluator.py \
+            #                    {path_to_ref} fid-tmp/array.npz", shell=True)
+            #    print('====================================')
 
             print(
                 '===============================================================================================================================')
