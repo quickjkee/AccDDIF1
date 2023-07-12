@@ -106,7 +106,7 @@ def edm_sampler(
         w2 = [0] * num_steps
 
     # Main sampling loop.
-    x_next = latents * t_steps[0]
+    x_next = latents * 80.0
     x0s = []
     ones = x_next.new_ones([x_next.shape[0]])
     for i, (t_cur, t_next) in enumerate(zip(t_steps[:-1], t_steps[1:])): # 0, ..., N-1
