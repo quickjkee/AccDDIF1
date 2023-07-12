@@ -62,7 +62,7 @@ def run2(edm_path, cons_path, n_steps):
     path_to_ref = f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/data_cifar/VIRTUAL_lsun_cat256.npz'
 
     steps = [40]
-    sigmas = [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27]
+    sigmas = [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 40, 50, 60, 70, 80]
     for n_steps in steps:
         for sigma in sigmas:
             print(n_steps)
