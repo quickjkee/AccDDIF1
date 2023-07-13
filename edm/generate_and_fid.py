@@ -62,7 +62,7 @@ def run2(edm_path, cons_path, n_steps):
     path_to_ref = f'{INPUT_PATH}/AccDDIF_sota_ffhq/ultramar_exp_estimate/data_cifar/VIRTUAL_lsun_cat256.npz'
 
     steps = [40]
-    sigmas = [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 40, 50, 60, 70, 80]
+    sigmas = [80]
     for n_steps in steps:
         for sigma in sigmas:
             print(n_steps)
@@ -70,7 +70,7 @@ def run2(edm_path, cons_path, n_steps):
             print(f'===================GENERATION STARTED using {edm_path} with seed 0-49999===================')
             print(f'===================STEPS {n_steps}, SIGMA {sigma}===================')
             subprocess.call(f"CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --standalone --nproc_per_node=8 edm/generate2.py \
-                            --outdir=fid-tmp --seeds=0-4999 --subdirs \
+                            --outdir=fid-tmp --seeds=0-49999 --subdirs \
                             --edm_path={edm_path} --cons_path={cons_path} --sigma_max={sigma} --steps={n_steps} \
                             --path={path}", shell=True)
 
