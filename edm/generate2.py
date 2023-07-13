@@ -304,7 +304,7 @@ def main(edm_path, cons_path, num_steps, sigma_max, outdir, subdirs, seeds, clas
         images, x0_images = edm_sampler(diffusion=edm_diff, model=edm_net,
                                         sigma_max=sigma_max, correction=images_distill,
                                         num_steps=num_steps, second_ord=True,
-                                       #S_churn=40, S_min=0.05, S_max=50, S_noise=1.003,
+                                        S_churn=40, S_min=0.05, S_max=50, S_noise=1.003,
                                         latents=latents, randn_like=rnd.randn_like)
 
         # Save images.
